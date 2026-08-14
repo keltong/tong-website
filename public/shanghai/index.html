@@ -502,8 +502,8 @@ let state={edits:{},notes:{},customBlocks:{},bookings:null,pretrip:null,bookingD
 let activeDay=0,saveTimer=null,expandedBlocks=new Set();
 
 function syncBadge(s){const e=document.getElementById('syncBadge'),l=document.getElementById('syncLabel');e.className='sync-badge '+s;l.textContent=s==='saving'?'Saving…':s==='error'?'Offline':'Synced';}
-async function loadState(){try{const r=await fetch('api_state');if(!r.ok)throw 0;const d=await r.json();state.edits=d.edits||{};state.notes=d.notes||{};state.customBlocks=d.customBlocks||{};state.bookings=d.bookings||null;state.pretrip=d.pretrip||null;state.bookingDone=d.bookingDone||{};state.pretripDone=d.pretripDone||{};syncBadge('idle');}catch{syncBadge('error');}}
-async function saveState(){syncBadge('saving');try{const r=await fetch('api_state',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(state)});if(!r.ok)throw 0;syncBadge('idle');}catch{syncBadge('error');}}
+async function loadState(){try{const r=await fetch('/api/state?trip=shanghai2026');if(!r.ok)throw 0;const d=await r.json();state.edits=d.edits||{};state.notes=d.notes||{};state.customBlocks=d.customBlocks||{};state.bookings=d.bookings||null;state.pretrip=d.pretrip||null;state.bookingDone=d.bookingDone||{};state.pretripDone=d.pretripDone||{};syncBadge('idle');}catch{syncBadge('error');}}
+async function saveState(){syncBadge('saving');try{const r=await fetch('/api/state?trip=shanghai2026',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(state)});if(!r.ok)throw 0;syncBadge('idle');}catch{syncBadge('error');}}
 function scheduleSave(){clearTimeout(saveTimer);saveTimer=setTimeout(saveState,500);}
 function getBookings(){return state.bookings||DEFAULT_BOOKINGS;}
 function getPretrip(){return state.pretrip||DEFAULT_PRETRIP;}

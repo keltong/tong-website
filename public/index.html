@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Tong Family Digital Hub — a private digital workspace for family-managed services, documents, and personal tools." />
+  <title>Tong Family Digital Hub</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#111827">
+
+  <style>
+    :root {
+      --bg: #0f1117;
+      --bg-soft: #171a23;
+      --card: rgba(255, 255, 255, 0.06);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --text: #f5f5f7;
+      --muted: #a7aab5;
+      --accent: #d8c6a3;
+      --accent-soft: rgba(216, 198, 163, 0.16);
+      --shadow: rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(216, 198, 163, 0.18), transparent 32rem),
+        radial-gradient(circle at bottom right, rgba(120, 140, 190, 0.14), transparent 34rem),
+        linear-gradient(135deg, #0f1117 0%, #151823 48%, #101219 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 960px;
+    }
+
+    .shell {
+      border: 1px solid var(--card-border);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.035));
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-radius: 32px;
+      box-shadow: 0 28px 80px var(--shadow);
+      overflow: hidden;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), #f6e8c9);
+      color: #151515;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+    }
+
+    .brand-text {
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .status {
+      font-size: 0.78rem;
+      color: var(--muted);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      padding: 0.45rem 0.7rem;
+      background: rgba(255, 255, 255, 0.035);
+      white-space: nowrap;
+    }
+
+    main {
+      padding: clamp(2.25rem, 5vw, 4.5rem);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border: 1px solid rgba(216, 198, 163, 0.22);
+      border-radius: 999px;
+      padding: 0.45rem 0.75rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 18px rgba(216, 198, 163, 0.8);
+    }
+
+    h1 {
+      max-width: 760px;
+      font-size: clamp(2.5rem, 7vw, 5.8rem);
+      line-height: 0.95;
+      letter-spacing: -0.075em;
+      font-weight: 750;
+      margin-bottom: 1.35rem;
+    }
+
+    .lead {
+      max-width: 620px;
+      font-size: clamp(1.05rem, 2vw, 1.35rem);
+      line-height: 1.6;
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0.75rem 1.1rem;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button-primary {
+      background: var(--text);
+      color: #111318;
+    }
+
+    .button-secondary {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .card {
+      padding: 1.1rem;
+      border-radius: 22px;
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .card h2 {
+      font-size: 0.95rem;
+      margin-bottom: 0.45rem;
+      letter-spacing: -0.01em;
+    }
+
+    .card p {
+      font-size: 0.9rem;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+    
+    .mark {
+	  width: 42px;
+	  height: 42px;
+	  border-radius: 14px;
+	  display: grid;
+	  place-items: center;
+	  background: transparent;
+	  overflow: hidden;
+	  box-shadow: 0 14px 30px rgba(20, 28, 40, 0.16);
+	}
+	
+	.mark img {
+	  width: 100%;
+	  height: 100%;
+	  object-fit: contain;
+	  display: block;
+	}
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      padding: 1.2rem 1.5rem;
+      color: rgba(245, 245, 247, 0.48);
+      font-size: 0.78rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 1rem;
+      }
+
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      main {
+        padding: 2rem 1.3rem;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <div class="shell">
+      <header>
+        <a class="brand" href="/" aria-label="Tong Family Digital Hub home">
+          <div class="mark">
+			  <img src="/android-chrome-192x192.png" alt="Tong" />
+		  </div>
+          <div class="brand-text">Tong Family</div>
+        </a>
+        <div class="status">Private digital workspace</div>
+      </header>
+
+      <main>
+        <div class="eyebrow"><span class="dot"></span> Authorised access only</div>
+
+        <h1>Tong Family Digital Hub</h1>
+
+        <p class="lead">
+          A private digital workspace for family-managed services, documents, and personal tools.
+          This domain is used for secure access to selected family systems.
+        </p>
+
+        <div class="actions">
+          <a class="button button-primary" href="mailto:kelvin@homeoftong.com">Contact Admin</a>
+        </div>
+
+        <section class="cards" id="access" aria-label="Access information">
+          <div class="card">
+            <h2>Private by Design</h2>
+            <p>Services linked to this domain are intended for family use and are not public applications.</p>
+          </div>
+
+          <div class="card">
+            <h2>Secure Access</h2>
+            <p>Protected services may require additional verification before access is granted.</p>
+          </div>
+
+          <div class="card">
+            <h2>Quiet Front Door</h2>
+            <p>This page intentionally avoids listing internal systems, tools, or infrastructure details.</p>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <span>© <span id="year"></span> Tong Family. Private digital services.</span>
+        <span>tong.website</span>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

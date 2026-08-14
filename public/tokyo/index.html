@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tokyo 2026 🗼</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#111827">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);min-height:100vh;color:#fff;padding-bottom:60px}
+
+/* Header */
+.site-header{background:rgba(255,255,255,.05);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.1);padding:20px 16px 14px;text-align:center;position:relative}
+.title{font-size:30px;font-weight:900;background:linear-gradient(135deg,#f9ca24,#f0932b,#e55039);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.meta-row{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-top:9px}
+.meta-pill{font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.7)}
+.status-row{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-top:8px}
+.status-pill{font-size:11px;padding:4px 12px;border-radius:20px;font-weight:700}
+.status-pill.done{background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff}
+.status-pill.todo{background:linear-gradient(135deg,#f7971e,#ffd200);color:#2d2d2d}
+.sync-badge{position:absolute;top:12px;right:12px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:16px;display:flex;align-items:center;gap:4px}
+.sync-badge.idle{background:rgba(56,239,125,.12);color:#38ef7d;border:1px solid rgba(56,239,125,.25)}
+.sync-badge.saving{background:rgba(255,214,0,.12);color:#ffd200;border:1px solid rgba(255,214,0,.25)}
+.sync-badge.error{background:rgba(255,80,80,.12);color:#ff8080;border:1px solid rgba(255,80,80,.25)}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+.sync-badge.saving .sync-dot{animation:pulse .8s infinite}
+
+/* Day nav */
+.day-nav{display:flex;gap:8px;overflow-x:auto;padding:14px;scrollbar-width:thin}
+.day-nav::-webkit-scrollbar{height:3px}
+.day-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:2px}
+.day-btn{flex-shrink:0;border:2px solid rgba(255,255,255,.12);border-radius:14px;padding:9px 12px;cursor:pointer;text-align:center;min-width:80px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.55);transition:all .2s}
+.day-btn.active{color:#fff}
+.day-btn .d-emoji{font-size:20px}
+.day-btn .d-label{font-size:10px;font-weight:800;margin-top:2px}
+.day-btn .d-date{font-size:9px;opacity:.7;margin-top:1px}
+
+/* Day banner */
+.day-banner-wrap{margin:0 14px 2px}
+.day-banner{border-radius:18px;padding:12px 16px;display:flex;align-items:flex-start;gap:12px}
+.big-emoji{font-size:36px;flex-shrink:0;margin-top:2px}
+.banner-body{flex:1}
+.day-sub{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:.75}
+.day-title{font-size:18px;font-weight:900;margin-top:2px}
+.banner-meta{font-size:11px;opacity:.6;margin-top:2px}
+.banner-acts{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
+.banner-btn{font-size:11px;font-weight:700;padding:5px 12px;border-radius:9px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:rgba(255,255,255,.8);cursor:pointer}
+.banner-btn:hover{background:rgba(255,255,255,.15);color:#fff}
+.banner-btn.primary{border-style:dashed}
+
+/* Blocks */
+.blocks{display:flex;flex-direction:column;gap:8px;padding:4px 14px}
+
+/* Collapsed block */
+.block{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);border-radius:14px;border-left-width:3px;border-left-style:solid;overflow:hidden;transition:all .15s}
+.block.custom-block{border-top-style:dashed;border-right-style:dashed;border-bottom-style:dashed}
+.block-head{display:flex;align-items:center;gap:10px;padding:11px 13px;cursor:pointer;user-select:none}
+.block-head:hover{background:rgba(255,255,255,.03)}
+.b-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.b-summary{flex:1;min-width:0}
+.b-title{font-size:13.5px;font-weight:800;color:#fff;line-height:1.3}
+.b-sub{font-size:11.5px;color:rgba(255,255,255,.62);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.b-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.time-badge{font-size:11px;font-weight:900;padding:3px 8px;border-radius:9px;white-space:nowrap;letter-spacing:.2px;box-shadow:0 2px 10px rgba(0,0,0,.22)}
+.b-chevron{font-size:11px;color:rgba(255,255,255,.3);transition:transform .22s;width:18px;text-align:center}
+.block.open .b-chevron{transform:rotate(180deg)}
+.bact-btn{width:24px;height:24px;border-radius:6px;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:12px}
+.bact-edit{background:rgba(99,179,237,.1);color:rgba(144,202,249,.65)}
+.bact-edit:hover{background:rgba(99,179,237,.28);color:#90caf9}
+.bact-del{background:rgba(255,80,80,.09);color:rgba(255,128,128,.55)}
+.bact-del:hover{background:rgba(255,80,80,.22);color:#ff8080}
+
+/* Expanded content */
+.block-body{display:none;padding:0 13px 13px}
+.block.open .block-body{display:block}
+.b-detail{font-size:12.5px;color:rgba(255,255,255,.72);line-height:1.65;margin-bottom:7px}
+.route-box{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:6px 10px;font-size:11.5px;color:rgba(255,255,255,.74);display:flex;gap:6px;margin-bottom:7px}
+.tag-box{border-radius:8px;padding:4px 10px;font-size:11.5px;font-weight:700;border:1px solid;margin-bottom:7px;display:inline-block}
+
+/* Embedded eats */
+.eats-divider{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);margin:10px 0 7px;display:flex;align-items:center;gap:7px}
+.eats-divider::before,.eats-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08)}
+.eat-inline{display:flex;gap:9px;padding:8px 10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;margin-bottom:6px}
+.eat-inline-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.eat-inline-body{flex:1;min-width:0}
+.eat-inline-name{font-size:12.5px;font-weight:800;color:#fff}
+.eat-inline-type{font-size:10.5px;color:rgba(255,255,255,.6);margin-top:1px}
+.eat-inline-why{font-size:11.5px;color:rgba(255,255,255,.72);margin-top:4px;line-height:1.5}
+.eat-tag{font-size:10px;font-weight:700;padding:1px 7px;border-radius:7px;background:rgba(249,202,36,.15);color:#f9ca24;border:1px solid rgba(249,202,36,.28);margin-top:4px;display:inline-block}
+
+/* Note area */
+.note-area{margin-top:7px}
+.note-display{background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.2);border-radius:8px;padding:6px 10px;font-size:11.5px;color:rgba(255,215,0,.85);line-height:1.5;cursor:pointer;white-space:pre-wrap;word-break:break-word}
+.note-display:hover{background:rgba(255,215,0,.11)}
+.note-empty-btn{font-size:11.5px;color:rgba(255,255,255,.3);background:none;border:1px dashed rgba(255,255,255,.18);border-radius:8px;padding:4px 10px;cursor:pointer;width:100%;text-align:left}
+.note-empty-btn:hover{color:rgba(255,255,255,.55)}
+.note-input{width:100%;background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.35);border-radius:8px;padding:6px 10px;font-size:11.5px;color:#fff;resize:vertical;font-family:inherit;line-height:1.5;min-height:56px}
+.note-input:focus{outline:none;border-color:rgba(255,215,0,.6)}
+.note-acts{display:flex;gap:6px;margin-top:4px}
+.note-acts button{font-size:11px;padding:4px 10px;border-radius:6px;border:none;cursor:pointer;font-weight:700}
+.n-save{background:#38ef7d;color:#0f2d20}
+.n-cancel{background:rgba(255,255,255,.09);color:rgba(255,255,255,.65)}
+.n-del{background:rgba(255,80,80,.13);color:#ff8080}
+
+/* Collapsible sections */
+.section{padding:6px 14px}
+.section-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:10px 4px;user-select:none;border-bottom:1px solid rgba(255,255,255,.07)}
+.section-toggle:hover .sec-title{opacity:.8}
+.sec-title{font-size:15px;font-weight:900}
+.sec-meta{font-size:11px;color:rgba(255,255,255,.58);font-weight:600;margin-top:1px}
+.sec-right{display:flex;align-items:center;gap:8px}
+.section-add-btn{font-size:11px;font-weight:700;padding:4px 10px;border-radius:9px;border:1px dashed rgba(255,255,255,.28);background:rgba(255,255,255,.05);color:rgba(255,255,255,.65);cursor:pointer}
+.section-add-btn:hover{background:rgba(255,255,255,.12);color:#fff}
+.sec-chevron{font-size:12px;color:rgba(255,255,255,.3);transition:transform .22s;width:20px;text-align:center}
+.sec-open .sec-chevron{transform:rotate(180deg)}
+.section-body{display:none;padding-top:10px}
+.section-body.open{display:block}
+
+/* List rows */
+.list-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:14px 16px}
+.check-row,.pretrip-row{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.check-row:last-child,.pretrip-row:last-child{border-bottom:none}
+.check-box,.pretrip-check{width:26px;height:26px;border-radius:7px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
+.check-box.done,.pretrip-check.done{background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff}
+.check-box.todo{background:rgba(255,255,255,.07);border:2px dashed rgba(255,255,255,.22)}
+.pretrip-check.todo{background:rgba(255,255,255,.06);border:2px dashed rgba(255,255,255,.18);font-size:12px;color:rgba(255,255,255,.45)}
+.row-text-wrap{flex:1;min-width:0;cursor:pointer}
+.check-text{font-size:12.5px;line-height:1.5}
+.check-text.done{color:rgba(255,255,255,.35);text-decoration:line-through}
+.row-acts{display:flex;gap:3px;flex-shrink:0;margin-top:1px}
+.row-edit-btn,.row-del-btn{width:24px;height:24px;border-radius:6px;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:12px}
+.row-edit-btn{background:rgba(99,179,237,.09);color:rgba(144,202,249,.55)}
+.row-edit-btn:hover{background:rgba(99,179,237,.25);color:#90caf9}
+.row-del-btn{background:rgba(255,80,80,.07);color:rgba(255,128,128,.45)}
+.row-del-btn:hover{background:rgba(255,80,80,.2);color:#ff8080}
+.pretrip-body{flex:1;min-width:0}
+.pretrip-top{display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap;margin-bottom:3px}
+.pretrip-title{font-size:13px;font-weight:700;color:#fff;flex:1;cursor:pointer;line-height:1.35}
+.pretrip-title.done{color:rgba(255,255,255,.38);text-decoration:line-through}
+.when-badge{font-size:9.5px;font-weight:800;padding:2px 6px;border-radius:7px;flex-shrink:0;white-space:nowrap}
+.when-now{background:rgba(231,76,60,.22);color:#ff8a80;border:1px solid rgba(231,76,60,.28)}
+.when-soon{background:rgba(243,156,18,.18);color:#ffd180;border:1px solid rgba(243,156,18,.28)}
+.when-pre{background:rgba(52,152,219,.18);color:#90caf9;border:1px solid rgba(52,152,219,.28)}
+.when-day{background:rgba(155,89,182,.18);color:#ce93d8;border:1px solid rgba(155,89,182,.28)}
+.pretrip-desc{font-size:11.5px;color:rgba(255,255,255,.55);line-height:1.5;margin-bottom:5px}
+.pretrip-link{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:7px;background:rgba(99,179,237,.12);color:#90caf9;border:1px solid rgba(99,179,237,.22);text-decoration:none}
+.pretrip-link:hover{background:rgba(99,179,237,.22)}
+
+/* Tips */
+.tips-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tip-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:12px}
+.tip-emoji{font-size:20px;margin-bottom:5px}
+.tip-title{font-size:11px;font-weight:800;margin-bottom:3px}
+.tip-text{font-size:11px;color:rgba(255,255,255,.6);line-height:1.5}
+
+/* Glance */
+.glance-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:14px 16px}
+.glance-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.glance-row:last-child{border-bottom:none}
+.glance-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.glance-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:#fff;border-radius:7px;padding:3px 9px;font-size:10px;cursor:pointer;font-weight:700;margin-left:auto}
+
+/* Modals */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;display:none;align-items:center;justify-content:center;padding:14px}
+.modal-overlay.open{display:flex}
+.modal{background:#1e1b3a;border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:20px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto}
+.modal h3{font-size:15px;margin-bottom:14px}
+.mfield{margin-bottom:12px}
+.mfield label{display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.62);margin-bottom:4px}
+.mfield input,.mfield textarea,.mfield select{width:100%;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.2);border-radius:9px;padding:8px 11px;font-size:13px;color:#fff;font-family:inherit;resize:vertical}
+.mfield input:focus,.mfield textarea:focus,.mfield select:focus{outline:none;border-color:rgba(255,255,255,.38)}
+.mfield textarea{min-height:68px;line-height:1.5}
+.mfield select option{background:#1e1b3a}
+.modal-btns{display:flex;gap:7px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.modal-btns button{padding:8px 15px;border-radius:9px;border:none;cursor:pointer;font-weight:700;font-size:13px}
+.btn-save{background:linear-gradient(135deg,#11998e,#38ef7d);color:#0f2d20}
+.btn-cancel{background:rgba(255,255,255,.07);color:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.14)!important}
+.btn-del{background:rgba(255,80,80,.13);color:#ff8080;border:1px solid rgba(255,80,80,.22)!important}
+.btn-reset{background:rgba(255,150,50,.1);color:#ffb347;border:1px solid rgba(255,150,50,.22)!important}
+
+/* Must Visit */
+.mv-grid{display:flex;flex-direction:column;gap:8px}
+.mv-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:13px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start}
+.mv-card.covered{border-left:3px solid #38ef7d}
+.mv-card.partial{border-left:3px solid #ffd200}
+.mv-card.gap{border-left:3px solid rgba(255,255,255,.2)}
+.mv-icon{font-size:26px;flex-shrink:0;margin-top:1px}
+.mv-body{flex:1;min-width:0}
+.mv-top{display:flex;align-items:flex-start;gap:7px;flex-wrap:wrap;margin-bottom:3px}
+.mv-name{font-size:13.5px;font-weight:800;color:#fff;flex:1}
+.mv-cat{font-size:10px;font-weight:700;padding:2px 7px;border-radius:7px;background:rgba(255,255,255,.09);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.1);white-space:nowrap;flex-shrink:0}
+.mv-why{font-size:12px;color:rgba(255,255,255,.62);line-height:1.55;margin-bottom:5px}
+.mv-status{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.mv-day-badge{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:7px;border:1px solid}
+.mv-day-badge.covered{background:rgba(56,239,125,.1);color:#38ef7d;border-color:rgba(56,239,125,.25)}
+.mv-day-badge.partial{background:rgba(255,210,0,.1);color:#ffd200;border-color:rgba(255,210,0,.25)}
+.mv-day-badge.gap{background:rgba(255,100,100,.08);color:rgba(255,150,150,.7);border-color:rgba(255,100,100,.15)}
+.mv-tip{font-size:11px;color:rgba(255,255,255,.4);font-style:italic}
+.mv-legend{display:flex;gap:12px;flex-wrap:wrap;padding:0 4px 10px;font-size:11px;color:rgba(255,255,255,.45)}
+.mv-legend span{display:flex;align-items:center;gap:5px}
+.mv-legend-dot{width:8px;height:8px;border-radius:50%}
+
+/* Loading */
+.loading-screen{position:fixed;inset:0;background:#0f0c29;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:200}
+.spin{width:36px;height:36px;border:3px solid rgba(255,255,255,.09);border-top-color:#38ef7d;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.footer{text-align:center;margin-top:22px;font-size:10px;color:rgba(255,255,255,.2)}
+</style>
+</head>
+<body>
+<div class="loading-screen" id="loadingScreen">
+  <div style="font-size:32px">🗼</div><div class="spin"></div>
+  <p style="font-size:12px;color:rgba(255,255,255,.45)">Loading trip data…</p>
+</div>
+<div id="app" style="display:none">
+
+<div class="site-header">
+  <div class="sync-badge idle" id="syncBadge"><span class="sync-dot"></span><span id="syncLabel">Synced</span></div>
+  <div class="title">Tokyo 2026 🗼</div>
+  <div style="font-size:12px;color:rgba(255,255,255,.45);margin-top:2px">Family Trip Planner</div>
+  <div class="meta-row">
+    <span class="meta-pill">✈️ 14–19 Jun 2026</span>
+    <span class="meta-pill">🏨 Shibuya Stream Hotel</span>
+    <span class="meta-pill">👨‍👩‍👦 Family of 4</span>
+  </div>
+  <div class="status-row">
+    <span class="status-pill done">✅ teamLab Planets — Thu 18 Jun 10:30am</span>
+    <span class="status-pill todo">⚡ Shibuya Sky — Book ~4 Jun!</span>
+  </div>
+</div>
+
+<div class="day-nav" id="dayNav"></div>
+<div class="day-banner-wrap" id="dayBannerWrap"></div>
+<div class="blocks" id="blocksContainer"></div>
+
+<!-- Pre-trip -->
+<div class="section">
+  <div class="section-toggle" id="secTogglePretrip" onclick="toggleSection('pretrip')">
+    <div><div class="sec-title">🗂️ Pre-Trip Requirements</div><div class="sec-meta" id="secMetaPretrip">Loading…</div></div>
+    <div class="sec-right">
+      <button class="section-add-btn" onclick="event.stopPropagation();openPretripModal(null)">+ Add</button>
+      <div class="sec-chevron">▼</div>
+    </div>
+  </div>
+  <div class="section-body" id="secBodyPretrip">
+    <div style="font-size:11px;color:rgba(255,255,255,.35);padding:0 4px 8px">Tap ✓ to mark done · ✏️ edit · 🗑️ delete</div>
+    <div class="list-card" id="pretripContainer"></div>
+  </div>
+</div>
+
+<!-- Bookings -->
+<div class="section">
+  <div class="section-toggle" id="secToggleBooking" onclick="toggleSection('booking')">
+    <div><div class="sec-title">📋 Booking Checklist</div><div class="sec-meta" id="secMetaBooking">Loading…</div></div>
+    <div class="sec-right">
+      <button class="section-add-btn" onclick="event.stopPropagation();openBookingModal(null)">+ Add</button>
+      <div class="sec-chevron">▼</div>
+    </div>
+  </div>
+  <div class="section-body" id="secBodyBooking">
+    <div style="font-size:11px;color:rgba(255,255,255,.35);padding:0 4px 8px">Tap ✓ to mark done · ✏️ edit · 🗑️ delete</div>
+    <div class="list-card" id="checklistContainer"></div>
+  </div>
+</div>
+
+<!-- Must Visit -->
+<div class="section">
+  <div class="section-toggle" id="secToggleMustvisit" onclick="toggleSection('mustvisit')">
+    <div><div class="sec-title">📍 Must Visit — First Timer</div><div class="sec-meta">18 iconic Tokyo spots · coverage at a glance</div></div>
+    <div class="sec-right"><div class="sec-chevron">▼</div></div>
+  </div>
+  <div class="section-body" id="secBodyMustvisit">
+    <div class="mv-legend">
+      <span><div class="mv-legend-dot" style="background:#38ef7d"></div>In your itinerary</span>
+      <span><div class="mv-legend-dot" style="background:#ffd200"></div>Partly covered</span>
+      <span><div class="mv-legend-dot" style="background:rgba(255,120,120,.6)"></div>Not in itinerary</span>
+    </div>
+    <div class="mv-grid" id="mustvisitContainer"></div>
+  </div>
+</div>
+
+<!-- Tips -->
+<div class="section">
+  <div class="section-toggle" id="secToggleTips" onclick="toggleSection('tips')">
+    <div><div class="sec-title">💡 Trip Tips</div><div class="sec-meta">8 quick tips</div></div>
+    <div class="sec-right"><div class="sec-chevron">▼</div></div>
+  </div>
+  <div class="section-body" id="secBodyTips">
+    <div class="tips-grid" id="tipsContainer"></div>
+  </div>
+</div>
+
+<!-- Glance -->
+<div class="section">
+  <div class="section-toggle" id="secToggleGlance" onclick="toggleSection('glance')">
+    <div><div class="sec-title">📅 At a Glance</div><div class="sec-meta">All 6 days</div></div>
+    <div class="sec-right"><div class="sec-chevron">▼</div></div>
+  </div>
+  <div class="section-body" id="secBodyGlance">
+    <div class="glance-card" id="glanceContainer"></div>
+  </div>
+</div>
+
+<div class="footer">Tokyo 2026 · Syncs via Cloudflare · tong.website 🗼</div>
+</div><!-- /app -->
+
+<!-- Block Modal -->
+<div class="modal-overlay" id="blockModal" onclick="closeModal('blockModal',event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3 id="blockModalTitle">✏️ Edit Block</h3>
+    <div class="mfield"><label>Icon</label><input id="bm_icon" maxlength="4"></div>
+    <div class="mfield"><label>Time</label><input id="bm_time" placeholder="e.g. 10:30–12:00"></div>
+    <div class="mfield"><label>Title</label><input id="bm_title"></div>
+    <div class="mfield"><label>Details</label><textarea id="bm_detail" rows="4"></textarea></div>
+    <div class="mfield"><label>Route / Transport</label><input id="bm_route"></div>
+    <div class="mfield"><label>Tag / Reminder</label><input id="bm_tag"></div>
+    <div class="modal-btns">
+      <button class="btn-del" id="blockDelBtn" onclick="deleteEditingBlock()" style="display:none">🗑️ Delete</button>
+      <button class="btn-reset" id="blockResetBtn" onclick="resetBlock()" style="display:none">↺ Reset</button>
+      <button class="btn-cancel" onclick="closeModal('blockModal')">Cancel</button>
+      <button class="btn-save" onclick="saveBlock()">Save</button>
+    </div>
+  </div>
+</div>
+<!-- Booking Modal -->
+<div class="modal-overlay" id="bookingModal" onclick="closeModal('bookingModal',event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3 id="bookingModalTitle">Add Booking</h3>
+    <div class="mfield"><label>Icon</label><input id="book_icon" maxlength="4"></div>
+    <div class="mfield"><label>Description</label><textarea id="book_text" rows="2"></textarea></div>
+    <div class="mfield"><label>Status</label>
+      <select id="book_done"><option value="false">⬜ Not done yet</option><option value="true">✅ Confirmed / done</option></select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-del" id="bookingDelBtn" onclick="deleteBooking()" style="display:none">🗑️ Delete</button>
+      <button class="btn-cancel" onclick="closeModal('bookingModal')">Cancel</button>
+      <button class="btn-save" onclick="saveBooking()">Save</button>
+    </div>
+  </div>
+</div>
+<!-- Pretrip Modal -->
+<div class="modal-overlay" id="pretripModal" onclick="closeModal('pretripModal',event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3 id="pretripModalTitle">Add Pre-Trip Task</h3>
+    <div class="mfield"><label>Icon</label><input id="pt_icon" maxlength="4"></div>
+    <div class="mfield"><label>Title</label><input id="pt_title"></div>
+    <div class="mfield"><label>Description</label><textarea id="pt_desc" rows="3"></textarea></div>
+    <div class="mfield"><label>When</label>
+      <select id="pt_when">
+        <option value="now">🔴 Do Now</option>
+        <option value="soon">🟡 1–2 Weeks Before</option>
+        <option value="pre">🔵 48hrs Before Flight</option>
+        <option value="day">🟣 First Day / On Arrival</option>
+      </select>
+    </div>
+    <div class="mfield"><label>Link URL (optional)</label><input id="pt_link" type="url" placeholder="https://…"></div>
+    <div class="mfield"><label>Link Label (optional)</label><input id="pt_linkLabel"></div>
+    <div class="modal-btns">
+      <button class="btn-del" id="pretripDelBtn" onclick="deletePretrip()" style="display:none">🗑️ Delete</button>
+      <button class="btn-cancel" onclick="closeModal('pretripModal')">Cancel</button>
+      <button class="btn-save" onclick="savePretrip()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════ DATA ══════════════
+const DAYS=[
+{date:"Sun 14 Jun",label:"Day 1",theme:"Arrival Day",emoji:"✈️",color:"#6C63FF",accent:"#4B44CC",iconBg:"#D0CCFF",
+blocks:[
+{time:"16:10",icon:"✈️",title:"Land at Narita",detail:"Clear immigration and collect luggage. JAL international arrivals. Take it easy — you've been flying since morning. Let everyone decompress.",route:null,tag:null},
+{time:"17:20",icon:"🚐",title:"Private Transfer → Shibuya Stream",detail:"Pre-booked private car from Narita arrivals hall. Driver meets you with a name board. ~80–90 min door to door.\n\nConfirm when booking: driver WhatsApp contact, vehicle size (4 pax + luggage), exact meetup point at arrivals.",route:"Narita Arrivals → Private Transfer → Shibuya Stream Hotel (front door)",tag:"⚠️ Book both arrival AND departure transfers — see Booking Checklist"},
+{time:"~19:00",icon:"🏨",title:"Check in — Shibuya Stream Hotel",detail:"Connects directly to JR Shibuya New South Exit and subway C2. Every day of this trip routes through here. Ask front desk for a hotel map card with exits marked.",route:null,tag:null},
+{time:"~19:30",icon:"🌃",title:"First walk — Shibuya Crossing",detail:"Hotel → JR gate → Shibuya Crossing in under 5 min. Stand for a full signal cycle (3,000 people per crossing). Hachiko statue is right there. Keep to 30–40 min — don't tire everyone on night one.",route:null,tag:null},
+{time:"~20:15",icon:"🍜",title:"Easy dinner near hotel",detail:"Keep it fast and fun. Uobei Dogenzaka (touch-panel conveyor sushi, bullet-train delivery) is ideal — fun for the boys, zero stress, affordable. Or Ichiran for solo-booth ramen comfort food. Back at hotel by 21:30.",route:null,tag:"Early night — 4 full days ahead"}
+]},
+{date:"Mon 15 Jun",label:"Day 2",theme:"Asakusa + Ginza",emoji:"⛩️",color:"#E8552A",accent:"#B83E1A",iconBg:"#FFD5C8",
+blocks:[
+{time:"07:30",icon:"☕",title:"Breakfast — City Bakery Shibuya Stream",detail:"Downstairs from your room in the Shibuya Stream building. Good coffee and pastries. Zero commute. Or 7-Eleven in the station concourse for an earlier start.",route:null,tag:null},
+{time:"08:45",icon:"🚇",title:"Leave → Asakusa (Ginza Line)",detail:"Easiest cross-city ride of the trip. Ginza Line direct from Shibuya to Asakusa, no transfers. Buy Suica IC cards at Shibuya station machine if not already done — tap in/out without buying individual tickets.",route:"Tokyo Metro Ginza Line: Shibuya → Asakusa (direct, ~32 min, ¥220)",tag:null},
+{time:"09:30–11:30",icon:"⛩️",title:"Senso-ji Temple + Asakusa snack crawl",detail:"Start with Senso-ji (628 AD): Kaminarimon gate → Nakamise approach → main hall → quieter rear courtyard. Try the omikuji fortune slips — the boys will love it.\n\nThen graze the side lanes — this IS your lunch. Kagetsudo melon pan (¥250), Asakusa Menchi beef croquette (¥250–300), Suzukien matcha soft serve level 5–7.",route:null,tag:null},
+{time:"11:30–12:00",icon:"🏮",title:"Side lanes browsing",detail:"The parallel Shin-Nakamise arcade (west of Nakamise) has local shops — lacquerware, tenugui cloths, chopstick sets. Good for small gifts. Avoid duplicating effort with Ginza department stores later.",route:null,tag:null},
+{time:"12:15",icon:"🚇",title:"Move to Ginza",detail:"Short hop, same Ginza Line.",route:"Tokyo Metro Ginza Line: Asakusa → Ginza (direct, ~18 min)",tag:null},
+{time:"13:00–16:30",icon:"🛍️",title:"Ginza — polished city browsing",detail:"Suggested order: Mitsukoshi flagship (B1–B2 food hall to scope dinner, 4F–5F crafts/gifts) → Ginza Six (basement bookshop, free rooftop) → Matsuya Ginza → Uniqlo Ginza flagship → Sony Park (free tech installations for the boys). Let your wife set the pace.",route:null,tag:null},
+{time:"16:30",icon:"🏬",title:"Depachika dinner — Mitsukoshi or Matsuya basement",detail:"Hit the department store basement food hall instead of a restaurant. Buy sushi sets, wagyu bento, tempura, croquettes, wagashi sweets. Everyone picks what they want. Eat back at hotel or Scramble Square seating. Mitsukoshi B1–B2 is best quality.\n\nShop after 16:30 — markdowns begin before closing.",route:"Ginza Line back to Shibuya (~32 min)",tag:"Tip: One of Tokyo's great food secrets"},
+{time:"19:00",icon:"🛋️",title:"Easy evening around hotel",detail:"Scramble Square seating areas, convenience store dessert run, early rest. Tomorrow is the highest-mileage day of the trip.",route:null,tag:null}
+]},
+{date:"Tue 16 Jun",label:"Day 3",theme:"Vintage Hunt Day",emoji:"👕",color:"#1A9E75",accent:"#0F6E56",iconBg:"#B8F0DC",
+blocks:[
+{time:"08:15",icon:"☕",title:"Breakfast + leave early",detail:"About Life Coffee Brewers (Shibuya) — small specialty stand, quick and excellent. Or convenience store for a faster exit. Non-negotiable: wear your most comfortable shoes.",route:null,tag:"⚠️ Highest mileage day — comfortable shoes required"},
+{time:"09:20",icon:"🚃",title:"Leave → Shimokitazawa",detail:"Quick 2-stop ride on the Keio Inokashira Line from Shibuya.",route:"Keio Inokashira Line: Shibuya → Shimokitazawa (~20 min, ¥130)",tag:null},
+{time:"09:40–13:15",icon:"🧥",title:"Shimokitazawa vintage — 2 sweeps + lunch",detail:"Best curated vintage neighbourhood in Tokyo. Do two sweeps with a break in between:\n\nFirst sweep (09:40–11:30): Start big — Flamingo (American denim/jackets), Wego (streetwear), 2nd Street (volume browsing). Don't buy yet — calibrate prices first.\n\nCafé break (11:30–12:00): Rest feet. Shiro-Hige's Cream Puff Factory (Totoro-shaped cream puffs) is nearby — buy a box.\n\nSecond sweep + buys (12:00–13:15): Return to flagged shops. Upper floors of multi-level buildings have the best finds. Check side streets west of the station.",route:null,tag:null},
+{time:"13:15–14:15",icon:"🍛",title:"Lunch in Shimokitazawa",detail:"Rojiura Curry Samurai — excellent soup curry with deep, spiced broth. A Shimokitazawa institution. Don't queue more than 15 min. Any small curry or café spot on the main streets also works. Keep the day moving.",route:null,tag:null},
+{time:"14:30",icon:"🚃",title:"Move → Harajuku",detail:"Back to Shibuya, then one stop on JR Yamanote.",route:"Shimokitazawa → Shibuya → JR Yamanote → Harajuku (15 min total)",tag:null},
+{time:"15:00–18:00",icon:"🎌",title:"Harajuku + Omotesando",detail:"Takeshita Street: tourist-heavy but fun for the boys. Real vintage is in Ura-Hara back streets and Cat Street.\n\nOmotesando (16:30–18:00): tree-lined boulevard, Omotesando Hills mall, Gyre Mall (independent labels). Good refined contrast for your wife while anyone tired sits at a café.",route:null,tag:null},
+{time:"18:15",icon:"🚆",title:"Return to Shibuya — hotel sort",detail:"Drop everything at hotel immediately. Bag audit: receipts together, fragile items identified, decide if you need a foldable extra bag (buy tomorrow in Akihabara if needed).",route:"JR Yamanote: Harajuku → Shibuya (3 min)",tag:"Sort purchases before dinner"},
+{time:"19:30",icon:"🥩",title:"Hearty dinner near hotel",detail:"You need a proper sit-down after this day. Han no Daidokoro Kadochika (quality yakiniku) or Yakiniku Like (solo-grill format, fast). Both close to hotel. Warm, filling, no long commute.",route:null,tag:null}
+]},
+{date:"Wed 17 Jun",label:"Day 4",theme:"Akihabara + Shibuya Sky",emoji:"🌆",color:"#D4367B",accent:"#99254F",iconBg:"#FAC0D8",
+blocks:[
+{time:"09:20",icon:"🚃",title:"Leave → Akihabara",detail:"You've been before — make this a targeted buying run, not an all-day wander. Go in with a priority list. 6 hours before you need to reset for Shibuya Sky.",route:"JR Yamanote: Shibuya → Akihabara (~28 min)",tag:null},
+{time:"10:00–12:00",icon:"🎮",title:"Akihabara — first cluster",detail:"Priority stops:\n• Mandarake Complex (8 floors) — best second-hand anime goods in Tokyo. Different category per floor — check directory at entrance. Spend most time here.\n• Animate Akihabara — new official merch, limited releases\n• Kotobukiya — premium figures and collectibles\n• Yodobashi Camera Akiba — gachapon on a dedicated floor\n\nGive the boys a gachapon budget while you work through Mandarake.",route:null,tag:null},
+{time:"12:00–13:00",icon:"🍛",title:"Lunch in Akihabara",detail:"Gyukatsu Ichi Ni San — wagyu cutlet on a hot stone, reliable and fast. Or Coco Ichibanya (customisable Japanese curry) if you want zero queue. Keep under an hour — still two clusters to go.",route:null,tag:null},
+{time:"13:00–15:30",icon:"🃏",title:"Akihabara — second cluster",detail:"Second Mandarake sweep (different floors). Side-street shops along Chuo-dori for independent sellers. Trading card shops if the boys are into TCG. Upper floors of multi-level resale buildings = best finds.",route:null,tag:null},
+{time:"15:30–16:00",icon:"🪙",title:"Final gachapon sweep + arcade",detail:"Yodobashi Akiba dedicated gachapon floor. Set per-person budget and stick to it. Club Sega or Taito Station across the street for 15 min of crane games.",route:null,tag:null},
+{time:"16:15",icon:"🏨",title:"Return to hotel — critical reset",detail:"Drop all purchases. Freshen up. Check Shibuya Sky ticket availability and weather forecast. You want clear skies — rain or heavy cloud = skip it.",route:"JR Yamanote back to Shibuya",tag:null},
+{time:"18:00–20:00",icon:"🌅",title:"Shibuya Sky — sunset + city lights",detail:"Open-air rooftop deck, 46th floor of Scramble Square, 229m up. Best view of Tokyo.\n\nThe 18:00–19:00 entry window: last daylight → golden hour → full sunset (Mt Fuji silhouette on clear evenings) → city lights coming on.\n\nBook at shibuya-scramble-square.com/sky — up to 2 weeks ahead. If heavy rain or overcast, skip — don't waste the fee.",route:null,tag:"⚡ Book on ~4 Jun — sunset slots sell fast"},
+{time:"~20:30",icon:"🍽️",title:"Dinner after Shibuya Sky",detail:"Staying local, no commute pressure. Best night for your nicer dinner. Ushigoro Bambina (excellent wagyu yakiniku), Katsu Midori (outstanding sushi value, queues but moves fast), or Shibuya Yokocho (lively izakaya alley) for the family-fun option.",route:null,tag:null}
+]},
+{date:"Thu 18 Jun",label:"Day 5",theme:"teamLab + Odaiba",emoji:"🎨",color:"#7C3AED",accent:"#5B21B6",iconBg:"#DDD0FA",
+blocks:[
+{time:"08:20",icon:"🚃",title:"Leave early → Shin-Toyosu",detail:"Longer route — leave with buffer. The Yurikamome is a driverless automated monorail over Tokyo Bay — great views and the boys will love it.",route:"JR Shibuya → Shimbashi (~20 min) → Yurikamome → Shin-Toyosu (~25 min) | 1 min walk",tag:null},
+{time:"09:50",icon:"🎟️",title:"Arrive + collect tickets",detail:"Arrive ~09:50 for your 10:30 slot. Collect tickets at entrance. Lockers for shoes — barefoot entry required for water areas. Secure loose items.",route:null,tag:null},
+{time:"10:30–12:30",icon:"🎨",title:"teamLab Planets",detail:"4 major immersive installations:\n• Floating Flower Garden — thousands of hanging orchids that part as you walk through\n• Universe of Water Particles on a Rock — massive cascading waterfall of light\n• The Infinite Crystal Universe — mirrored infinity room (your best photo of the trip)\n• Soft Black Hole — spongy black foam room you sink into\n\nBarefoot required. Water area is ankle-to-knee depth. Photography fully allowed.",route:null,tag:"✅ CONFIRMED BOOKING 10:30am — barefoot required"},
+{time:"12:45",icon:"🍣",title:"Lunch — Toyosu area",detail:"Sushizanmai Toyosu: 24hrs, fresh sushi, good value, zero stress — right by the station. Or Toyosu Senkyaku Banrai (newer Edo-themed food complex near Toyosu Market) for more atmosphere.",route:null,tag:null},
+{time:"14:00–17:30",icon:"🗼",title:"Odaiba — waterfront + DiverCity",detail:"Walk the bayside promenade. Stops:\n• DiverCity — full-scale Unicorn Gundam statue (18m tall). Photo stop for the boys.\n• Odaiba Marine Park — waterfront with Rainbow Bridge and the full Tokyo skyline. Best family photo spot of the trip.\n• Bills Odaiba — ricotta hotcakes + bay view, good afternoon rest stop\n\nSlow the pace at 17:00: sit by the water, Rainbow Bridge in frame, watch sunset.",route:null,tag:null},
+{time:"18:45",icon:"🚃",title:"Return to Shibuya",detail:"Same route in reverse.",route:"Yurikamome: Shin-Toyosu → Shimbashi → JR → Shibuya (~50 min)",tag:null},
+{time:"~20:00",icon:"🥂",title:"Best dinner of the trip",detail:"Book in advance. Tonight counts.\n\nNabezo Shibuya Center-gai: all-you-can-eat shabu shabu or sukiyaki — great for the whole family, memorable, reasonable price.\n\nUshigoro Shibuya: premium wagyu yakiniku. If budget allows, make this the trip's best meal.",route:null,tag:"🎉 Last full night in Tokyo — book this in advance"}
+]},
+{date:"Fri 19 Jun",label:"Day 6",theme:"Departure",emoji:"🛫",color:"#2563EB",accent:"#1D4ED8",iconBg:"#BFDBFE",
+blocks:[
+{time:"06:30",icon:"⏰",title:"Wake up — bags should already be packed",detail:"Pack everything the night before except toiletries and tomorrow's clothes. Final checklist: all 4 passports, JAL boarding passes, power bank charged, fragile items wrapped.",route:null,tag:"⚠️ Pack the night before — non-negotiable with 4 people"},
+{time:"07:15",icon:"🏨",title:"Quick breakfast + hotel checkout",detail:"Hotel breakfast or convenience store. Final room sweep: wall chargers, safe contents, bathroom. Checkout at front desk.",route:null,tag:null},
+{time:"07:35",icon:"🚐",title:"Private Transfer → Haneda Terminal 3",detail:"Same provider as arrival. Driver picks up at hotel front entrance. ~40–60 min. Have booking reference and driver's number saved offline.",route:"Shibuya Stream Hotel → Private Transfer → Haneda Terminal 3",tag:"⚠️ Book with same provider as arrival"},
+{time:"09:00",icon:"🛂",title:"Security + immigration",detail:"Haneda T3 international departures. JAL check-in on 4F. Allow: check-in (20 min), immigration queue (20–30 min), security (15 min). Two and a half hours pre-flight is right.",route:null,tag:null},
+{time:"10:00",icon:"🍱",title:"Haneda Airport — last Japan food",detail:"Haneda Airport Garden (airside, after immigration) — Edo-themed food street. Ramen, soba, tempura, onigiri sets. Genuinely excellent. Better than most airport food globally. T3 4F food hall is the backup.",route:null,tag:null},
+{time:"11:40",icon:"✈️",title:"JAL flight home",detail:"Wheels up. Great trip.",route:null,tag:null}
+]}
+];
+
+// Eats embedded by block key (dayIndex_blockIndex)
+const BLOCK_EATS={
+"0_4":[
+{icon:"🍣",name:"Uobei Shibuya Dogenzaka",type:"Conveyor belt sushi",why:"Touch-panel ordering, bullet-train delivery. Fun for the boys, zero stress, affordable. Best arrival dinner.",tag:"⭐ Top Pick"},
+{icon:"🍜",name:"Ichiran Shibuya",type:"Solo-booth ramen",why:"Individual booth ramen. Great comfort food after a long flight. Go before 20:00.",tag:null},
+{icon:"🥩",name:"Gyukatsu Motomura",type:"Wagyu beef cutlet",why:"Only if queue is under 20 min.",tag:null},
+{icon:"🍰",name:"Scramble Square Food Floor",type:"Dessert / snacks",why:"Post-dinner sweet stop. Wide variety, no queue stress.",tag:null}
+],
+"1_0":[
+{icon:"☕",name:"The City Bakery Shibuya Stream",type:"Breakfast — downstairs from hotel",why:"Convenient, good coffee and pastries. Zero commute.",tag:"Right Here"}
+],
+"1_2":[
+{icon:"🍞",name:"Asakusa Kagetsudo",type:"Melon pan (snack) — ¥250",why:"Famous oversized melon bread. Buy and eat while walking.",tag:null},
+{icon:"🍖",name:"Asakusa Menchi",type:"Beef croquette (snack) — ¥250–300",why:"Hot, crispy, queue moves fast. One of Nakamise's best bites.",tag:null},
+{icon:"🍦",name:"Suzukien Asakusa",type:"Matcha soft serve",why:"7 levels of matcha intensity. Go level 5–7 for a real hit.",tag:"⭐ Top Pick"}
+],
+"1_6":[
+{icon:"🏬",name:"Ginza Mitsukoshi B1–B2",type:"Depachika — sushi, wagyu bento, tempura, wagashi",why:"Best depachika in Ginza. Buy and eat back at hotel.",tag:"⭐ Top Pick"},
+{icon:"🏬",name:"Matsuya Ginza Food Hall",type:"Depachika alternative",why:"Slightly more casual. Use if Mitsukoshi is too crowded.",tag:null}
+],
+"2_0":[
+{icon:"☕",name:"About Life Coffee Brewers",type:"Breakfast coffee (Shibuya)",why:"Small specialty stand. Quick, excellent. Near Shibuya hotel.",tag:null}
+],
+"2_2":[
+{icon:"🐱",name:"Shiro-Hige's Cream Puff Factory",type:"Dessert — Totoro-shaped cream puffs",why:"Buy a box during your café break. Your wife will love these.",tag:null}
+],
+"2_3":[
+{icon:"🍛",name:"Rojiura Curry Samurai",type:"Lunch — soup curry",why:"Excellent deep, spiced broth. A Shimokitazawa institution. Don't queue >15 min.",tag:"⭐ Top Pick"}
+],
+"2_5":[
+{icon:"🥞",name:"Marion Crepes Takeshita Street",type:"Snack — Harajuku crepe",why:"The classic Harajuku eat. Queue moves fast. Eat while walking.",tag:null},
+{icon:"🌭",name:"Le Shiner",type:"Snack — Korean-style cheese hotdog",why:"Good for the boys. Quick eat between shops.",tag:null}
+],
+"2_7":[
+{icon:"🥩",name:"Han no Daidokoro Kadochika",type:"Dinner — quality yakiniku",why:"Better cuts and grill than fast chains. Worth sitting down for after this day.",tag:"⭐ Top Pick"},
+{icon:"🔥",name:"Yakiniku Like Udagawacho",type:"Dinner alt — solo yakiniku",why:"Each person grills their own. Fast, affordable, no sharing.",tag:null}
+],
+"3_2":[
+{icon:"🥩",name:"Gyukatsu Ichi Ni San",type:"Lunch — wagyu cutlet on a hot stone",why:"Reliable, fast, good value. Queue moves well.",tag:"⭐ Top Pick"},
+{icon:"🍛",name:"Coco Ichibanya",type:"Lunch alt — customisable curry",why:"Zero queue risk. Safe family option.",tag:null}
+],
+"3_7":[
+{icon:"🥩",name:"Ushigoro Bambina Shibuya",type:"Dinner — wagyu yakiniku",why:"Excellent wagyu. Upscale but not stuffy. Best choice for quality after the view.",tag:"⭐ Top Pick"},
+{icon:"🍣",name:"Katsu Midori Shibuya",type:"Dinner — outstanding sushi value",why:"Fresh, generous, fair price. Queue but moves fast.",tag:"⭐ Top Pick"},
+{icon:"🏮",name:"Shibuya Yokocho",type:"Dinner — izakaya alley",why:"Lively, fun for kids. Order from multiple stalls — no commitment.",tag:null}
+],
+"4_3":[
+{icon:"🍣",name:"Sushizanmai Toyosu",type:"Lunch — fresh sushi, 24hrs",why:"Right by the station after teamLab. No stress.",tag:"⭐ Top Pick"},
+{icon:"🏯",name:"Toyosu Senkyaku Banrai",type:"Lunch alt — Edo-themed food complex",why:"More atmosphere. Great post-teamLab experience.",tag:null}
+],
+"4_4":[
+{icon:"🥞",name:"Bills Odaiba",type:"Afternoon stop — ricotta hotcakes + bay view",why:"Great rest with a view. Worth the price as a break.",tag:null}
+],
+"4_6":[
+{icon:"🍲",name:"Nabezo Shibuya Center-gai",type:"Final dinner — all-you-can-eat shabu shabu",why:"Great for the whole family. Memorable. Reasonable for AYCE quality.",tag:"⭐ Top Pick"},
+{icon:"🥩",name:"Ushigoro Shibuya",type:"Final dinner — premium wagyu",why:"Best wagyu yakiniku in Shibuya. If budget allows, make this the trip's best meal.",tag:null},
+{icon:"🍣",name:"Uobei Dogenzaka",type:"Final dinner — casual fallback",why:"If everyone is exhausted. Still fun and satisfying.",tag:null}
+],
+"5_4":[
+{icon:"✈️",name:"Haneda Airport Garden",type:"Pre-flight food — Edo-style food street (airside)",why:"Genuine Japanese restaurants after immigration. Ramen, soba, tempura. Better than most airports globally.",tag:"⭐ Top Pick"},
+{icon:"🍱",name:"Haneda T3 4F Food Hall",type:"Backup if Garden is crowded",why:"Standard airport options. Still decent — ramen, bento, sushi.",tag:null}
+]
+};
+
+const DEFAULT_BOOKINGS=[
+{id:"b0",icon:"🏨",text:"Shibuya Stream Hotel — confirmed",done:true},
+{id:"b1",icon:"✈️",text:"JAL flights — Narita in (14 Jun) + Haneda out (19 Jun) — confirmed",done:true},
+{id:"b2",icon:"🎨",text:"teamLab Planets — Thu 18 Jun 10:30am — confirmed",done:true},
+{id:"b3",icon:"🚐",text:"Airport transfer (Arrival): Narita → Shibuya Stream, 14 Jun ~17:20",done:false},
+{id:"b4",icon:"🚐",text:"Airport transfer (Departure): Shibuya Stream → Haneda T3, 19 Jun ~07:35",done:false},
+{id:"b5",icon:"🌆",text:"Shibuya Sky — book ~4 Jun (2-week window). Aim for 18:00–19:00 sunset slot.",done:false},
+{id:"b6",icon:"🍽️",text:"Thu final dinner — book Nabezo or Ushigoro Shibuya in advance",done:false},
+{id:"b7",icon:"🛍️",text:"Foldable extra bag for vintage day overflow",done:false},
+{id:"b8",icon:"💴",text:"Draw yen cash at Narita ATM on arrival",done:false}
+];
+
+const DEFAULT_PRETRIP=[
+{id:"p0",icon:"🛂",title:"Check all 4 passports — valid + 2 blank pages each",desc:"Must be valid for full stay. Japan requires ≥2 blank pages. Check every expiry date.",when:"now",whenLabel:"Do Now",link:"https://www.ica.gov.sg/documents/passport",linkLabel:"ICA Passport Renewal"},
+{id:"p1",icon:"🛡️",title:"Register with MFA SafeTravel — all 4 members",desc:"Free, 5 min per person. Registers you with Singapore Embassy in Tokyo for emergency contact.",when:"now",whenLabel:"Do Now",link:"https://eregistry.mfa.gov.sg/",linkLabel:"MFA SafeTravel Registry"},
+{id:"p2",icon:"🏥",title:"Travel insurance for all 4 family members",desc:"Japan has no healthcare agreement with Singapore. Medical costs are very high. Cover: hospitalisation, trip cancellation, lost baggage.",when:"now",whenLabel:"Do Now",link:"https://www.moneysmart.sg/travel-insurance",linkLabel:"Compare Insurance"},
+{id:"p6",icon:"🚐",title:"Book airport transfers — BOTH ways",desc:"Arrival: Narita → Shibuya Stream, 14 Jun ~17:20. Departure: Shibuya Stream → Haneda T3, 19 Jun ~07:35. Confirm vehicle size (4 pax + bags).",when:"soon",whenLabel:"Book Now",link:"https://www.klook.com/en-SG/activity/2-tokyo-airport-transfer/",linkLabel:"Klook Airport Transfer"},
+{id:"p3",icon:"🌐",title:"Create Visit Japan Web (VJW) account — all 4 members",desc:"Japan's free digital entry system. Generates QR codes replacing paper arrival and customs forms. No visa needed for Singaporeans.",when:"soon",whenLabel:"2–4 Weeks Before",link:"https://vjw-lp.digital.go.jp/en/",linkLabel:"Visit Japan Web"},
+{id:"p9",icon:"📶",title:"Japan eSIM for the trip",desc:"Buy online before flying — activates on arrival. Airalo or Klook are reliable. Or rent Pocket Wi-Fi at Narita.",when:"soon",whenLabel:"1–2 Weeks Before",link:"https://www.airalo.com/japan-esim",linkLabel:"Japan eSIM"},
+{id:"p4",icon:"📋",title:"Complete VJW immigration + customs forms — all 4",desc:"Fill 'Immigration Clearance and Customs Declaration' in VJW for each person. Need: passport numbers, JAL flight number, arrival date (14 Jun), hotel address.",when:"pre",whenLabel:"48hrs Before Flight",link:"https://services.digital.go.jp/en/visit-japan-web/guide/",linkLabel:"VJW How-To"},
+{id:"p5",icon:"📱",title:"Save VJW QR codes offline — all 4",desc:"After completing VJW, save QR codes offline. One kiosk scan at Narita handles both immigration and customs — saves 20–30 min vs paper forms.",when:"pre",whenLabel:"48hrs Before Flight",link:"https://vjw-lp.digital.go.jp/en/",linkLabel:"Visit Japan Web"},
+{id:"p8",icon:"📍",title:"Download offline Tokyo maps on Google Maps",desc:"Download the Tokyo area before flying. Works without mobile data for all trip areas.",when:"day",whenLabel:"Day Before",link:"https://support.google.com/maps/answer/6291838",linkLabel:"Offline Maps Guide"},
+{id:"p6b",icon:"💴",title:"Draw yen cash at Narita on arrival",desc:"7-Eleven ATMs at Narita accept foreign cards, English menus. Draw ¥50,000–¥80,000 for the family. Vintage shops, gachapon, small food stalls are cash-only.",when:"day",whenLabel:"On Arrival",link:"https://www.narita-airport.jp/en/service/atm/",linkLabel:"Narita ATM Locations"},
+{id:"p7",icon:"🪪",title:"Buy Suica IC cards at Shibuya station",desc:"Rechargeable tap-in/out card for all trains and convenience stores. Buy at any JR ticket machine on arrival day. Or set up Mobile Suica on iPhone/Android.",when:"day",whenLabel:"First Day",link:"https://www.jreast.co.jp/e/pass/suica.html",linkLabel:"JR East Suica Info"},
+{id:"p10",icon:"🎫",title:"JESTA not required for Jun 2026",desc:"Japan's ESTA-style pre-authorisation for Singaporeans doesn't launch until 2028. Nothing extra needed beyond VJW.",when:"now",whenLabel:"FYI Only",link:"https://mainlymiles.com/2025/10/13/japan-to-introduce-esta-requirement-for-travellers-including-singaporeans/",linkLabel:"JESTA Info"}
+];
+
+const MUST_VISIT=[
+{icon:"🌊",name:"Shibuya Crossing",cat:"Icon",why:"The world's busiest pedestrian crossing. A defining Tokyo moment — stand centre-crossing during a full signal cycle. Nothing prepares you for it.",status:"covered",dayLabel:"Day 1 · Sun 14 Jun",tip:null},
+{icon:"⛩️",name:"Senso-ji Temple, Asakusa",cat:"Temple",why:"Tokyo's oldest temple (628 AD). Kaminarimon gate, Nakamise shopping street, main hall, quiet rear courtyard. The most photographed spot in the city.",status:"covered",dayLabel:"Day 2 · Mon 15 Jun",tip:null},
+{icon:"🏯",name:"Meiji Shrine, Harajuku",cat:"Shrine",why:"Massive forested Shinto shrine dedicated to Emperor Meiji. Calming contrast to Harajuku's chaos just 5 min away. Walk the gravel path through towering cypress trees.",status:"gap",dayLabel:"Not in itinerary",tip:"30 min detour from Harajuku on Day 3 — enter from Harajuku station side"},
+{icon:"🌆",name:"Shibuya Sky",cat:"Viewpoint",why:"Best open-air rooftop observation deck in Tokyo. 229m up, 360° city views, Mt Fuji on clear days, stunning at sunset.",status:"covered",dayLabel:"Day 4 · Wed 17 Jun",tip:"Book ~4 Jun when 2-week window opens"},
+{icon:"🗼",name:"Tokyo Skytree",cat:"Viewpoint",why:"World's tallest broadcast tower at 634m. Two observation decks — Tembo Deck (350m) and Tembo Galleria (450m). Spectacular night views. Not in your itinerary but doable from Asakusa.",status:"gap",dayLabel:"Not in itinerary",tip:"5 min walk from Asakusa — squeeze in after Senso-ji on Day 2 if time allows"},
+{icon:"🎮",name:"Akihabara Electric Town",cat:"Neighbourhood",why:"The global centre of anime, manga, retro gaming and electronics culture. Multi-floor Mandarake for second-hand finds, Yodobashi for electronics, Animate for official merch, gachapon everywhere.",status:"covered",dayLabel:"Day 4 · Wed 17 Jun",tip:null},
+{icon:"👕",name:"Shimokitazawa",cat:"Neighbourhood",why:"Tokyo's bohemian vintage capital — indie record shops, second-hand clothing, cafés, live music venues and curry restaurants. Nothing like the main tourist circuit.",status:"covered",dayLabel:"Day 3 · Tue 16 Jun",tip:null},
+{icon:"🌸",name:"Harajuku / Takeshita Street",cat:"Neighbourhood",why:"Japan's street fashion heartland. Takeshita is energetic and colourful — Marion Crepes, wild fashion, cosplay. Ura-Hara back streets have serious vintage finds.",status:"covered",dayLabel:"Day 3 · Tue 16 Jun",tip:null},
+{icon:"🛍️",name:"Ginza",cat:"Neighbourhood",why:"Tokyo's most polished shopping district — flagship department stores, Mitsukoshi, Uniqlo, international luxury brands, and the unmissable depachika basement food halls.",status:"covered",dayLabel:"Day 2 · Mon 15 Jun",tip:null},
+{icon:"🌃",name:"Shinjuku",cat:"Neighbourhood",why:"One of Tokyo's great night districts. Kabukicho neon, Golden Gai tiny bars, Omoide Yokocho (Memory Lane), department stores, and the city's busiest station. Not in itinerary.",status:"gap",dayLabel:"Not in itinerary",tip:"Easy evening trip from Shibuya — 5 min on JR Yamanote. Consider swapping one Shibuya evening"},
+{icon:"🎨",name:"teamLab Planets, Toyosu",cat:"Experience",why:"Fully immersive digital art — barefoot, water installations, infinity mirror rooms. One of the most unique experiences in modern Tokyo. Sold out far in advance.",status:"covered",dayLabel:"Day 5 · Thu 18 Jun",tip:"CONFIRMED 10:30am"},
+{icon:"🤖",name:"Odaiba & DiverCity",cat:"Waterfront",why:"Futuristic bay island — 18m Gundam statue, teamLab borderless (now at Azabudai Hills), waterfront promenade with Rainbow Bridge views, Bills café.",status:"covered",dayLabel:"Day 5 · Thu 18 Jun",tip:null},
+{icon:"🐟",name:"Tsukiji Outer Market",cat:"Food",why:"The old Tokyo fish market area still has the best seafood street food in the city — tamagoyaki, fresh scallops, tuna skewers, fish-on-stick. The inner market moved to Toyosu but the outer market is still excellent.",status:"gap",dayLabel:"Not in itinerary",tip:"15 min from Ginza by foot — possible add-on to Day 2 before or after Ginza"},
+{icon:"🏮",name:"Nakamise Shopping Street, Asakusa",cat:"Shopping",why:"700m approach to Senso-ji lined with traditional souvenir shops — tenugui cloths, ningyo dolls, sembei crackers, lacquerware. The side lanes are better and less crowded.",status:"covered",dayLabel:"Day 2 · Mon 15 Jun",tip:null},
+{icon:"🍣",name:"A proper depachika experience",cat:"Food",why:"Department store basement food halls are one of Japan's greatest secrets — immaculate presentation, wagyu bento, sushi sets, wagashi sweets, fresh fruit. Every major department store has one.",status:"covered",dayLabel:"Day 2 · Ginza Mitsukoshi B1–B2",tip:null},
+{icon:"🚈",name:"Yurikamome Monorail ride",cat:"Experience",why:"Fully automated, driverless monorail that runs elevated over Tokyo Bay with sweeping views of Rainbow Bridge, Odaiba and the city skyline. The journey itself is half the point.",status:"covered",dayLabel:"Day 5 · Thu 18 Jun",tip:null},
+{icon:"🍜",name:"Ramen — a proper bowl",cat:"Food",why:"Tokyo-style shoyu ramen (soy-based clear broth) or rich tonkotsu. Ichiran for the solo-booth experience, Fuunji for tsukemen (dipping noodles), or any small counter shop with a plastic food display outside.",status:"partial",dayLabel:"Day 1 option · Ichiran Shibuya",tip:"Any trip to Japan should include at least one proper counter-seat ramen"},
+{icon:"🏪",name:"A convenience store meal",cat:"Food",why:"Japanese convenience stores are genuinely excellent — fresh onigiri, hot karaage, chilled bento, matcha desserts. 7-Eleven, Lawson, FamilyMart. Treat it as a real meal at least once.",status:"covered",dayLabel:"Every day — use freely",tip:"Breakfast, snack, late-night — the answer is always a konbini"}
+];
+
+const TIPS_DATA=[
+{icon:"💴",title:"Cash",text:"Draw yen on arrival. Vintage shops, gachapon, temple stalls, small restaurants — all cash-only."},
+{icon:"🚇",title:"Suica Card",text:"Buy for all 4 on Day 1. Tap in/out every train, convenience stores, vending machines."},
+{icon:"👟",title:"Vintage Day Shoes",text:"Tue is the highest-mileage day. Shimokitazawa + Harajuku = 10,000+ steps. Wear your best."},
+{icon:"🏨",title:"Hotel Location",text:"Shibuya Stream connects to JR New South Exit and subway C2. Every day of this trip runs through it."},
+{icon:"🧳",title:"Luggage Warning",text:"Tue vintage day overflows bags. Bring or buy a foldable tote before Shimokitazawa."},
+{icon:"🌧️",title:"Shibuya Sky Weather",text:"If rain or heavy overcast on Wed evening, skip it. Don't waste the entry fee on a closed-in view."},
+{icon:"👣",title:"teamLab Shoes",text:"Barefoot entry required for water areas. Lockers at the entrance. Wear easy-off shoes."},
+{icon:"🍱",title:"Convenience Stores",text:"7-Eleven, Lawson, FamilyMart — excellent hot food, snacks, ATMs. Use them freely."}
+];
+
+// ══════════════ STATE ══════════════
+let state={edits:{},notes:{},customBlocks:{},bookings:null,pretrip:null,bookingDone:{},pretripDone:{}};
+let activeDay=0, saveTimer=null;
+let expandedBlocks=new Set(); // block keys that are open
+let expandedSections={}; // section id -> bool
+
+const API_URL = '/api/state?trip=tokyo2026';
+
+function syncBadge(s){
+  const e = document.getElementById('syncBadge');
+  const l = document.getElementById('syncLabel');
+  e.className = 'sync-badge ' + s;
+  l.textContent = s === 'saving' ? 'Saving…' : s === 'error' ? 'Offline' : 'Synced';
+}
+
+async function loadState(){
+  try{
+    const r = await fetch(API_URL, { cache: 'no-store' });
+    if(!r.ok) throw 0;
+
+    const d = await r.json();
+
+    state.edits = d.edits || {};
+    state.notes = d.notes || {};
+    state.customBlocks = d.customBlocks || {};
+    state.bookings = d.bookings || null;
+    state.pretrip = d.pretrip || null;
+    state.bookingDone = d.bookingDone || {};
+    state.pretripDone = d.pretripDone || {};
+
+    syncBadge('idle');
+  }catch{
+    syncBadge('error');
+  }
+}
+
+async function saveState(){
+  syncBadge('saving');
+  try{
+    const r = await fetch(API_URL, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(state)
+    });
+
+    if(!r.ok) throw 0;
+    syncBadge('idle');
+  }catch{
+    syncBadge('error');
+  }
+}
+function scheduleSave(){clearTimeout(saveTimer);saveTimer=setTimeout(saveState,500);}
+function getBookings(){return state.bookings||DEFAULT_BOOKINGS;}
+function getPretrip(){return state.pretrip||DEFAULT_PRETRIP;}
+function getCB(d){return state.customBlocks[String(d)]||[];}
+function bKey(d,b){return d+'_'+b;}
+function getBlock(d,b){const k=bKey(d,b),base=DAYS[d].blocks[b],e=state.edits[k]||{};return{time:e.time!==undefined?e.time:base.time,icon:e.icon!==undefined?e.icon:base.icon,title:e.title!==undefined?e.title:base.title,detail:e.detail!==undefined?e.detail:base.detail,route:e.route!==undefined?e.route:base.route,tag:e.tag!==undefined?e.tag:base.tag};}
+function tc(c){return({'#1A9E75':'#7EEAC0','#2563EB':'#93C5FD','#7C3AED':'#C4B5FD','#D4367B':'#F9A8D4','#E8552A':'#FCA87A','#6C63FF':'#C4B5FD'})[c]||'#fff';}
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>');}
+function uid(){return'u'+Date.now()+Math.random().toString(36).slice(2,6);}
+function firstLine(s){if(!s)return'';const l=s.split('\n')[0];return l.length>70?l.slice(0,68)+'…':l;}
+
+// ══════════════ RENDER ══════════════
+function renderAll(){renderDayNav();renderDayBanner();renderBlocks();renderSectionMeta();renderPretrip();renderChecklist();renderTips();renderGlance();}
+
+function renderDayNav(){document.getElementById('dayNav').innerHTML=DAYS.map((d,i)=>`<button class="day-btn${i===activeDay?' active':''}" onclick="switchDay(${i})" style="${i===activeDay?'background:'+d.color+';border-color:'+d.color:''}"><div class="d-emoji">${d.emoji}</div><div class="d-label">${d.label}</div><div class="d-date">${d.date.split(' ').slice(0,2).join(' ')}</div></button>`).join('');}
+
+function renderDayBanner(){const d=DAYS[activeDay],cc=getCB(activeDay).length,total=d.blocks.length+cc,openCount=expandedBlocks.size;document.getElementById('dayBannerWrap').innerHTML=`<div class="day-banner" style="background:linear-gradient(135deg,${d.color}cc,${d.accent}aa);box-shadow:0 6px 24px ${d.color}44"><div class="big-emoji">${d.emoji}</div><div class="banner-body"><div class="day-sub">${d.label} · ${d.date}</div><div class="day-title">${d.theme}</div><div class="banner-meta">${total} blocks${cc?' · '+cc+' added':''}${openCount?' · '+openCount+' expanded':''}</div><div class="banner-acts"><button class="banner-btn" onclick="expandAll()">↕ Expand All</button><button class="banner-btn" onclick="collapseAll()">↕ Collapse All</button><button class="banner-btn primary" onclick="openBlockModal('new',${activeDay},null)">＋ Add Block</button></div></div></div>`;}
+
+function parseBlockTimeValue(t){
+  if(!t)return 99999;
+  let s=String(t).trim();
+  // Accept formats like 07:30, ~19:00, 09:30–11:30, 9.30am, 7:30pm, 745, 7pm
+  s=s.replace(/[~〜頃]/g,'').trim();
+  const m=s.match(/(\d{1,2})(?::|\.|：)?(\d{2})?\s*(am|pm)?/i);
+  if(!m)return 99999;
+  let h=parseInt(m[1],10);
+  let min=m[2]!==undefined?parseInt(m[2],10):0;
+  const ap=m[3]?m[3].toLowerCase():'';
+  if(ap==='pm' && h<12)h+=12;
+  if(ap==='am' && h===12)h=0;
+  // If user enters 730, interpret as 7:30 instead of 73:00
+  if(h>23 && !m[2]){min=h%100;h=Math.floor(h/100);}
+  if(h>23||min>59)return 99999;
+  return h*60+min;
+}
+
+function renderBlocks(){
+  const d=DAYS[activeDay];
+  const items=[];
+
+  d.blocks.forEach((_,bi)=>{
+    const key=bKey(activeDay,bi);
+    const blk=getBlock(activeDay,bi);
+    items.push({
+      sort:parseBlockTimeValue(blk.time),
+      originalIndex:items.length,
+      html:blockHtml(key,blk,d,BLOCK_EATS[key]||[],`openBlockModal('default',${activeDay},${bi})`,null,false)
+    });
+  });
+
+  getCB(activeDay).forEach(cb=>{
+    const key='custom_'+cb.id;
+    items.push({
+      sort:parseBlockTimeValue(cb.time),
+      originalIndex:items.length,
+      html:blockHtml(key,cb,d,[],`openBlockModal('custom',${activeDay},'${cb.id}')`,`delCB(${activeDay},'${cb.id}')`,true)
+    });
+  });
+
+  items.sort((a,b)=>a.sort===b.sort?a.originalIndex-b.originalIndex:a.sort-b.sort);
+  document.getElementById('blocksContainer').innerHTML=items.map(i=>i.html).join('');
+}
+
+function blockHtml(key,blk,d,eats,editFn,delFn,isCustom){
+const isOpen=expandedBlocks.has(key);
+const sk=key.replace(/'/g,"\\'");
+const note=state.notes[key]||'';
+const eatHtml=eats.length?`<div class="eats-divider">🍽 recommended eats</div>${eats.map(e=>`<div class="eat-inline"><div class="eat-inline-icon">${e.icon}</div><div class="eat-inline-body"><div class="eat-inline-name">${esc(e.name)}</div><div class="eat-inline-type">${esc(e.type)}</div><div class="eat-inline-why">${esc(e.why)}</div>${e.tag?`<div class="eat-tag">${esc(e.tag)}</div>`:''}</div></div>`).join('')}`:'';
+const noteHtml=note?`<div class="note-display" onclick="editNote('${sk}')">📝 ${esc(note)}</div>`:`<button class="note-empty-btn" onclick="editNote('${sk}')">+ Add a note…</button>`;
+return`<div class="block${isCustom?' custom-block':''}${isOpen?' open':''}" id="bl_${key}" style="border-left-color:${d.color}">
+<div class="block-head" onclick="toggleBlock('${sk}')">
+<div class="b-icon" style="background:${d.iconBg}">${blk.icon||'📌'}</div>
+<div class="b-summary">
+<div class="b-title">${esc(blk.title)}</div>
+${!isOpen?`<div class="b-sub">${esc(firstLine(blk.detail))}</div>`:''}
+</div>
+<div class="b-right">
+<div class="time-badge" style="background:${d.color};color:#fff;border:1px solid rgba(255,255,255,.35)">${esc(blk.time)}</div>
+<button class="bact-btn bact-edit" onclick="event.stopPropagation();${editFn}">✏️</button>
+${delFn?`<button class="bact-btn bact-del" onclick="event.stopPropagation();${delFn}">🗑️</button>`:''}
+<span class="b-chevron">▼</span>
+</div>
+</div>
+<div class="block-body">
+<div class="b-detail">${esc(blk.detail)}</div>
+${blk.route?`<div class="route-box">🗺️ ${esc(blk.route)}</div>`:''}
+${blk.tag?`<div class="tag-box" style="background:${d.color}15;color:${tc(d.color)};border-color:${d.color}38">${esc(blk.tag)}</div>`:''}
+${eatHtml}
+<div class="note-area" id="na_${key}">${noteHtml}</div>
+</div>
+</div>`;}
+
+function toggleBlock(key){if(expandedBlocks.has(key))expandedBlocks.delete(key);else expandedBlocks.add(key);renderDayBanner();renderBlocks();}
+function expandAll(){DAYS[activeDay].blocks.forEach((_,bi)=>expandedBlocks.add(bKey(activeDay,bi)));getCB(activeDay).forEach(cb=>expandedBlocks.add('custom_'+cb.id));renderDayBanner();renderBlocks();}
+function collapseAll(){expandedBlocks.clear();renderDayBanner();renderBlocks();}
+
+// Section show/hide
+function toggleSection(id){
+const body=document.getElementById('secBody'+capitalize(id));
+const toggle=document.getElementById('secToggle'+capitalize(id));
+const isOpen=body.classList.contains('open');
+if(isOpen){body.classList.remove('open');toggle.classList.remove('sec-open');}
+else{body.classList.add('open');toggle.classList.add('sec-open');if(id==='pretrip')renderPretrip();else if(id==='booking')renderChecklist();else if(id==='tips')renderTips();else if(id==='glance')renderGlance();else if(id==='mustvisit')renderMustVisit();}
+}
+function capitalize(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+
+function renderSectionMeta(){
+const pt=getPretrip(),ptDone=pt.filter(t=>state.pretripDone[t.id]).length;document.getElementById('secMetaPretrip').textContent=`${ptDone} of ${pt.length} complete`;
+const bk=getBookings(),bkDone=bk.filter(b=>state.bookingDone[b.id]!==undefined?state.bookingDone[b.id]:b.done).length;document.getElementById('secMetaBooking').textContent=`${bkDone} of ${bk.length} confirmed`;
+}
+
+function renderChecklist(){document.getElementById('checklistContainer').innerHTML=getBookings().map((b,i)=>{const done=state.bookingDone[b.id]!==undefined?state.bookingDone[b.id]:b.done;return`<div class="check-row"><div class="check-box ${done?'done':'todo'}" onclick="toggleBookingDone('${b.id}')">${done?'✓':esc(b.icon)}</div><div class="row-text-wrap" onclick="toggleBookingDone('${b.id}')"><div class="check-text${done?' done':''}">${esc(b.text)}</div></div><div class="row-acts"><button class="row-edit-btn" onclick="openBookingModal(${i})">✏️</button><button class="row-del-btn" onclick="delBookingIdx(${i})">🗑️</button></div></div>`;}).join('');}
+
+function renderPretrip(){const wc={now:'when-now',soon:'when-soon',pre:'when-pre',day:'when-day'};document.getElementById('pretripContainer').innerHTML=getPretrip().map((t,i)=>{const done=state.pretripDone[t.id]||false;return`<div class="pretrip-row"><div class="pretrip-check ${done?'done':'todo'}" onclick="togglePretripDone('${t.id}')">${done?'✓':esc(t.icon)}</div><div class="pretrip-body"><div class="pretrip-top"><div class="pretrip-title${done?' done':''}" onclick="togglePretripDone('${t.id}')">${esc(t.title)}</div><span class="when-badge ${wc[t.when]||'when-now'}">${esc(t.whenLabel)}</span></div><div class="pretrip-desc">${esc(t.desc)}</div>${t.link?`<a class="pretrip-link" href="${esc(t.link)}" target="_blank" onclick="event.stopPropagation()">🔗 ${esc(t.linkLabel||t.link)}</a>`:''}</div><div class="row-acts" style="margin-top:2px"><button class="row-edit-btn" onclick="openPretripModal(${i});event.stopPropagation()">✏️</button><button class="row-del-btn" onclick="delPretripIdx(${i});event.stopPropagation()">🗑️</button></div></div>`;}).join('');}
+
+function renderTips(){document.getElementById('tipsContainer').innerHTML=TIPS_DATA.map(t=>`<div class="tip-card"><div class="tip-emoji">${t.icon}</div><div class="tip-title">${esc(t.title)}</div><div class="tip-text">${esc(t.text)}</div></div>`).join('');}
+
+function renderGlance(){document.getElementById('glanceContainer').innerHTML=DAYS.map((d,i)=>`<div class="glance-row"><div class="glance-icon" style="background:${d.color}">${d.emoji}</div><div><div style="font-size:10px;color:rgba(255,255,255,.38);font-weight:700">${d.date}</div><div style="font-size:12px;font-weight:700">${d.theme}</div></div><button class="glance-btn" onclick="switchDay(${i})" style="border-color:${d.color}44">View →</button></div>`).join('');}
+
+function renderMustVisit(){document.getElementById('mustvisitContainer').innerHTML=MUST_VISIT.map(m=>`<div class="mv-card ${m.status}"><div class="mv-icon">${m.icon}</div><div class="mv-body"><div class="mv-top"><div class="mv-name">${esc(m.name)}</div><span class="mv-cat">${esc(m.cat)}</span></div><div class="mv-why">${esc(m.why)}</div><div class="mv-status"><span class="mv-day-badge ${m.status}">${m.status==='covered'?'✅':m.status==='partial'?'🟡':'⬜'} ${esc(m.dayLabel)}</span>${m.tip?`<span class="mv-tip">💡 ${esc(m.tip)}</span>`:''}</div></div></div>`).join('');}
+
+// ══════════════ NOTES ══════════════
+function editNote(key){
+const areaId='na_'+key;
+const area=document.getElementById(areaId);
+if(!area)return;
+const cur=state.notes[key]||'';
+const sk=key.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+area.innerHTML=`<textarea class="note-input" placeholder="Add note…">${esc(cur).replace(/<br>/g,'\n')}</textarea><div class="note-acts"><button class="n-save" onclick="saveNote('${sk}',this)">Save</button><button class="n-cancel" onclick="cancelNote('${sk}')">Cancel</button>${cur?`<button class="n-del" onclick="deleteNote('${sk}')">Delete</button>`:''}</div>`;
+const ta=area.querySelector('textarea');if(ta){ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);}
+}
+function saveNote(key,btn){const ta=btn.closest('.note-area').querySelector('textarea');if(ta){const v=ta.value.trim();if(v)state.notes[key]=v;else delete state.notes[key];scheduleSave();}refreshNoteArea(key);}
+function cancelNote(key){refreshNoteArea(key);}
+function deleteNote(key){delete state.notes[key];scheduleSave();refreshNoteArea(key);}
+function refreshNoteArea(key){const area=document.getElementById('na_'+key);if(!area)return;const note=state.notes[key]||'';const sk=key.replace(/'/g,"\\'");area.innerHTML=note?`<div class="note-display" onclick="editNote('${sk}')">📝 ${esc(note)}</div>`:`<button class="note-empty-btn" onclick="editNote('${sk}')">+ Add a note…</button>`;}
+
+// ══════════════ BLOCK MODAL ══════════════
+let eb=null;
+function openBlockModal(type,dayIdx,ref){
+eb={type,dayIndex:dayIdx,ref};
+const isNew=type==='new',isCustom=type==='custom';
+document.getElementById('blockModalTitle').textContent=isNew?'➕ Add Block':'✏️ Edit Block';
+document.getElementById('blockDelBtn').style.display=isCustom?'inline-flex':'none';
+document.getElementById('blockResetBtn').style.display=type==='default'?'inline-flex':'none';
+let blk={icon:'📌',time:'',title:'',detail:'',route:'',tag:''};
+if(type==='default')blk=getBlock(dayIdx,ref);
+else if(isCustom)blk=getCB(dayIdx).find(b=>b.id===ref)||blk;
+document.getElementById('bm_icon').value=blk.icon||'📌';
+document.getElementById('bm_time').value=blk.time||'';
+document.getElementById('bm_title').value=blk.title||'';
+document.getElementById('bm_detail').value=(blk.detail||'').replace(/<br>/g,'\n');
+document.getElementById('bm_route').value=blk.route||'';
+document.getElementById('bm_tag').value=blk.tag||'';
+openModal('blockModal');
+}
+function saveBlock(){
+const icon=document.getElementById('bm_icon').value.trim()||'📌';
+const time=document.getElementById('bm_time').value.trim();
+const title=document.getElementById('bm_title').value.trim();
+const detail=document.getElementById('bm_detail').value.trim();
+const route=document.getElementById('bm_route').value.trim();
+const tag=document.getElementById('bm_tag').value.trim();
+if(!title){alert('Please enter a title.');return;}
+const{type,dayIndex,ref}=eb;
+if(type==='new'){const dk=String(dayIndex);if(!state.customBlocks[dk])state.customBlocks[dk]=[];state.customBlocks[dk].push({id:uid(),icon,time,title,detail,route:route||null,tag:tag||null});}
+else if(type==='default'){const key=bKey(dayIndex,ref),base=DAYS[dayIndex].blocks[ref],s={};if(icon!==base.icon)s.icon=icon;if(time!==base.time)s.time=time;if(title!==base.title)s.title=title;if(detail!==base.detail)s.detail=detail;if(route!==(base.route||''))s.route=route||null;if(tag!==(base.tag||''))s.tag=tag||null;if(Object.keys(s).length)state.edits[key]={...(state.edits[key]||{}),...s};}
+else{const dk=String(dayIndex),arr=getCB(dayIndex),idx=arr.findIndex(b=>b.id===ref);if(idx>-1)arr[idx]={...arr[idx],icon,time,title,detail,route:route||null,tag:tag||null};state.customBlocks[dk]=arr;}
+closeModal('blockModal');renderDayBanner();renderBlocks();scheduleSave();
+}
+function resetBlock(){if(!eb||eb.type!=='default')return;if(!confirm('Reset to original?'))return;delete state.edits[bKey(eb.dayIndex,eb.ref)];closeModal('blockModal');renderBlocks();scheduleSave();}
+function deleteEditingBlock(){if(!eb||eb.type!=='custom')return;if(!confirm('Delete this block?'))return;delCB(eb.dayIndex,eb.ref);closeModal('blockModal');}
+function delCB(dayIdx,id){const dk=String(dayIdx);state.customBlocks[dk]=(state.customBlocks[dk]||[]).filter(b=>b.id!==id);delete state.notes['custom_'+id];renderDayBanner();renderBlocks();scheduleSave();}
+
+// ══════════════ BOOKING CRUD ══════════════
+let eBIdx=null;
+function openBookingModal(idx){eBIdx=idx;const isNew=idx===null;document.getElementById('bookingModalTitle').textContent=isNew?'➕ Add Booking':'✏️ Edit Booking';document.getElementById('bookingDelBtn').style.display=isNew?'none':'inline-flex';if(isNew){document.getElementById('book_icon').value='📌';document.getElementById('book_text').value='';document.getElementById('book_done').value='false';}else{const b=getBookings()[idx];document.getElementById('book_icon').value=b.icon||'📌';document.getElementById('book_text').value=b.text||'';const d=state.bookingDone[b.id]!==undefined?state.bookingDone[b.id]:b.done;document.getElementById('book_done').value=d?'true':'false';}openModal('bookingModal');}
+function saveBooking(){const icon=document.getElementById('book_icon').value.trim()||'📌',text=document.getElementById('book_text').value.trim(),done=document.getElementById('book_done').value==='true';if(!text){alert('Enter a description.');return;}const list=JSON.parse(JSON.stringify(getBookings()));if(eBIdx===null){const id=uid();list.push({id,icon,text,done});state.bookingDone[id]=done;}else{const b=list[eBIdx];b.icon=icon;b.text=text;state.bookingDone[b.id]=done;}state.bookings=list;closeModal('bookingModal');renderChecklist();renderSectionMeta();scheduleSave();}
+function deleteBooking(){if(eBIdx===null)return;if(!confirm('Delete?'))return;const list=JSON.parse(JSON.stringify(getBookings()));const[r]=list.splice(eBIdx,1);delete state.bookingDone[r.id];state.bookings=list;closeModal('bookingModal');renderChecklist();renderSectionMeta();scheduleSave();}
+function delBookingIdx(i){if(!confirm('Delete?'))return;const list=JSON.parse(JSON.stringify(getBookings()));const[r]=list.splice(i,1);delete state.bookingDone[r.id];state.bookings=list;renderChecklist();renderSectionMeta();scheduleSave();}
+function toggleBookingDone(id){const base=getBookings().find(b=>b.id===id);state.bookingDone[id]=!(state.bookingDone[id]!==undefined?state.bookingDone[id]:(base?base.done:false));scheduleSave();renderChecklist();renderSectionMeta();}
+
+// ══════════════ PRETRIP CRUD ══════════════
+let ePIdx=null;
+const WL={now:'Do Now',soon:'1–2 Weeks Before',pre:'48hrs Before Flight',day:'First Day / On Arrival'};
+function openPretripModal(idx){ePIdx=idx;const isNew=idx===null;document.getElementById('pretripModalTitle').textContent=isNew?'➕ Add Pre-Trip Task':'✏️ Edit Task';document.getElementById('pretripDelBtn').style.display=isNew?'none':'inline-flex';if(isNew){document.getElementById('pt_icon').value='📌';document.getElementById('pt_title').value='';document.getElementById('pt_desc').value='';document.getElementById('pt_when').value='soon';document.getElementById('pt_link').value='';document.getElementById('pt_linkLabel').value='';}else{const t=getPretrip()[idx];document.getElementById('pt_icon').value=t.icon||'📌';document.getElementById('pt_title').value=t.title||'';document.getElementById('pt_desc').value=t.desc||'';document.getElementById('pt_when').value=t.when||'soon';document.getElementById('pt_link').value=t.link||'';document.getElementById('pt_linkLabel').value=t.linkLabel||'';}openModal('pretripModal');}
+function savePretrip(){const icon=document.getElementById('pt_icon').value.trim()||'📌',title=document.getElementById('pt_title').value.trim(),desc=document.getElementById('pt_desc').value.trim(),when=document.getElementById('pt_when').value,link=document.getElementById('pt_link').value.trim(),linkLabel=document.getElementById('pt_linkLabel').value.trim();if(!title){alert('Enter a title.');return;}const list=JSON.parse(JSON.stringify(getPretrip())),whenLabel=WL[when]||when;if(ePIdx===null)list.push({id:uid(),icon,title,desc,when,whenLabel,link,linkLabel});else Object.assign(list[ePIdx],{icon,title,desc,when,whenLabel,link,linkLabel});state.pretrip=list;closeModal('pretripModal');renderPretrip();renderSectionMeta();scheduleSave();}
+function deletePretrip(){if(ePIdx===null)return;if(!confirm('Delete?'))return;const list=JSON.parse(JSON.stringify(getPretrip()));const[r]=list.splice(ePIdx,1);delete state.pretripDone[r.id];state.pretrip=list;closeModal('pretripModal');renderPretrip();renderSectionMeta();scheduleSave();}
+function delPretripIdx(i){if(!confirm('Delete?'))return;const list=JSON.parse(JSON.stringify(getPretrip()));const[r]=list.splice(i,1);delete state.pretripDone[r.id];state.pretrip=list;renderPretrip();renderSectionMeta();scheduleSave();}
+function togglePretripDone(id){state.pretripDone[id]=!(state.pretripDone[id]||false);scheduleSave();renderPretrip();renderSectionMeta();}
+
+// ══════════════ UTILS ══════════════
+function closeModal(id,e){if(!e||e.target===document.getElementById(id))document.getElementById(id).classList.remove('open');}
+function openModal(id){document.getElementById(id).classList.add('open');}
+
+function switchDay(i){
+activeDay=i;expandedBlocks.clear();
+renderDayNav();renderDayBanner();renderBlocks();renderSectionMeta();
+window.scrollTo({top:0,behavior:'smooth'});
+}
+
+async function initApp(){
+await loadState();
+document.getElementById('loadingScreen').style.display='none';
+document.getElementById('app').style.display='block';
+renderAll();
+}
+initApp();
+</script>
+</body>
+</html>

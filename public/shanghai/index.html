@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shanghai 2026 🏮 Family Trip</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(135deg,#1a0a00,#3d1a00,#1a0a0a);min-height:100vh;color:#fff;padding-bottom:60px}
+.site-header{background:rgba(255,255,255,.05);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.1);padding:20px 16px 14px;text-align:center;position:relative}
+.title{font-size:30px;font-weight:900;background:linear-gradient(135deg,#ff6b35,#f7c59f,#e63946);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.meta-row{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-top:9px}
+.meta-pill{font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.7)}
+.status-row{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-top:8px}
+.status-pill{font-size:11px;padding:4px 12px;border-radius:20px;font-weight:700}
+.status-pill.done{background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff}
+.status-pill.todo{background:linear-gradient(135deg,#f7971e,#ffd200);color:#2d2d2d}
+.status-pill.warn{background:linear-gradient(135deg,#e63946,#ff6b35);color:#fff}
+.sync-badge{position:absolute;top:12px;right:12px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:16px;display:flex;align-items:center;gap:4px}
+.sync-badge.idle{background:rgba(56,239,125,.12);color:#38ef7d;border:1px solid rgba(56,239,125,.25)}
+.sync-badge.saving{background:rgba(255,214,0,.12);color:#ffd200;border:1px solid rgba(255,214,0,.25)}
+.sync-badge.error{background:rgba(255,80,80,.12);color:#ff8080;border:1px solid rgba(255,80,80,.25)}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+.sync-badge.saving .sync-dot{animation:pulse .8s infinite}
+.day-nav{display:flex;gap:8px;overflow-x:auto;padding:14px;scrollbar-width:thin}
+.day-nav::-webkit-scrollbar{height:3px}
+.day-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:2px}
+.day-btn{flex-shrink:0;border:2px solid rgba(255,255,255,.12);border-radius:14px;padding:9px 12px;cursor:pointer;text-align:center;min-width:80px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.55);transition:all .2s}
+.day-btn.active{color:#fff}
+.day-btn .d-emoji{font-size:20px}
+.day-btn .d-label{font-size:10px;font-weight:800;margin-top:2px}
+.day-btn .d-date{font-size:9px;opacity:.7;margin-top:1px}
+.day-banner-wrap{margin:0 14px 2px}
+.day-banner{border-radius:18px;padding:12px 16px;display:flex;align-items:flex-start;gap:12px}
+.big-emoji{font-size:36px;flex-shrink:0;margin-top:2px}
+.banner-body{flex:1}
+.day-sub{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:.75}
+.day-title{font-size:18px;font-weight:900;margin-top:2px}
+.banner-meta{font-size:11px;opacity:.6;margin-top:2px}
+.banner-acts{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
+.banner-btn{font-size:11px;font-weight:700;padding:5px 12px;border-radius:9px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:rgba(255,255,255,.8);cursor:pointer}
+.banner-btn:hover{background:rgba(255,255,255,.15)}
+.banner-btn.primary{border-style:dashed}
+.blocks{display:flex;flex-direction:column;gap:8px;padding:4px 14px}
+.block{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);border-radius:14px;border-left-width:3px;border-left-style:solid;overflow:hidden}
+.block.custom-block{border-top-style:dashed;border-right-style:dashed;border-bottom-style:dashed}
+.block-head{display:flex;align-items:center;gap:10px;padding:11px 13px;cursor:pointer;user-select:none}
+.block-head:hover{background:rgba(255,255,255,.03)}
+.b-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.b-summary{flex:1;min-width:0}
+.b-title{font-size:13.5px;font-weight:800;color:#fff;line-height:1.3}
+.b-sub{font-size:11.5px;color:rgba(255,255,255,.42);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.b-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.time-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;white-space:nowrap}
+.b-chevron{font-size:11px;color:rgba(255,255,255,.3);transition:transform .22s;width:18px;text-align:center}
+.block.open .b-chevron{transform:rotate(180deg)}
+.bact-btn{width:24px;height:24px;border-radius:6px;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:12px}
+.bact-edit{background:rgba(99,179,237,.1);color:rgba(144,202,249,.65)}
+.bact-edit:hover{background:rgba(99,179,237,.28);color:#90caf9}
+.bact-del{background:rgba(255,80,80,.09);color:rgba(255,128,128,.55)}
+.bact-del:hover{background:rgba(255,80,80,.22);color:#ff8080}
+.block-body{display:none;padding:0 13px 13px}
+.block.open .block-body{display:block}
+.b-detail{font-size:12.5px;color:rgba(255,255,255,.72);line-height:1.65;margin-bottom:7px}
+.route-box{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:8px;padding:6px 10px;font-size:11.5px;color:rgba(255,255,255,.55);display:flex;gap:6px;margin-bottom:7px}
+.tag-box{border-radius:8px;padding:4px 10px;font-size:11.5px;font-weight:700;border:1px solid;margin-bottom:7px;display:inline-block}
+.eats-divider{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);margin:10px 0 7px;display:flex;align-items:center;gap:7px}
+.eats-divider::before,.eats-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08)}
+.eat-inline{display:flex;gap:9px;padding:8px 10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;margin-bottom:6px}
+.eat-inline-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.eat-inline-body{flex:1;min-width:0}
+.eat-inline-name{font-size:12.5px;font-weight:800;color:#fff}
+.eat-inline-type{font-size:10.5px;color:rgba(255,255,255,.42);margin-top:1px}
+.eat-inline-why{font-size:11.5px;color:rgba(255,255,255,.6);margin-top:4px;line-height:1.5}
+.eat-tag{font-size:10px;font-weight:700;padding:1px 7px;border-radius:7px;background:rgba(249,202,36,.15);color:#f9ca24;border:1px solid rgba(249,202,36,.28);margin-top:4px;display:inline-block}
+.note-area{margin-top:7px}
+.note-display{background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.2);border-radius:8px;padding:6px 10px;font-size:11.5px;color:rgba(255,215,0,.85);line-height:1.5;cursor:pointer;white-space:pre-wrap;word-break:break-word}
+.note-display:hover{background:rgba(255,215,0,.11)}
+.note-empty-btn{font-size:11.5px;color:rgba(255,255,255,.3);background:none;border:1px dashed rgba(255,255,255,.18);border-radius:8px;padding:4px 10px;cursor:pointer;width:100%;text-align:left}
+.note-empty-btn:hover{color:rgba(255,255,255,.55)}
+.note-input{width:100%;background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.35);border-radius:8px;padding:6px 10px;font-size:11.5px;color:#fff;resize:vertical;font-family:inherit;line-height:1.5;min-height:56px}
+.note-input:focus{outline:none;border-color:rgba(255,215,0,.6)}
+.note-acts{display:flex;gap:6px;margin-top:4px}
+.note-acts button{font-size:11px;padding:4px 10px;border-radius:6px;border:none;cursor:pointer;font-weight:700}
+.n-save{background:#38ef7d;color:#0f2d20}
+.n-cancel{background:rgba(255,255,255,.09);color:rgba(255,255,255,.65)}
+.n-del{background:rgba(255,80,80,.13);color:#ff8080}
+.section{padding:6px 14px}
+.section-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:10px 4px;user-select:none;border-bottom:1px solid rgba(255,255,255,.07)}
+.sec-title{font-size:15px;font-weight:900}
+.sec-meta{font-size:11px;color:rgba(255,255,255,.38);font-weight:600;margin-top:1px}
+.sec-right{display:flex;align-items:center;gap:8px}
+.section-add-btn{font-size:11px;font-weight:700;padding:4px 10px;border-radius:9px;border:1px dashed rgba(255,255,255,.28);background:rgba(255,255,255,.05);color:rgba(255,255,255,.65);cursor:pointer}
+.section-add-btn:hover{background:rgba(255,255,255,.12);color:#fff}
+.sec-chevron{font-size:12px;color:rgba(255,255,255,.3);transition:transform .22s;width:20px;text-align:center}
+.sec-open .sec-chevron{transform:rotate(180deg)}
+.section-body{display:none;padding-top:10px}
+.section-body.open{display:block}
+.list-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:14px 16px}
+.check-row,.pretrip-row{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.check-row:last-child,.pretrip-row:last-child{border-bottom:none}
+.check-box,.pretrip-check{width:26px;height:26px;border-radius:7px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
+.check-box.done,.pretrip-check.done{background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff}
+.check-box.todo{background:rgba(255,255,255,.07);border:2px dashed rgba(255,255,255,.22)}
+.pretrip-check.todo{background:rgba(255,255,255,.06);border:2px dashed rgba(255,255,255,.18);font-size:12px;color:rgba(255,255,255,.45)}
+.row-text-wrap{flex:1;min-width:0;cursor:pointer}
+.check-text{font-size:12.5px;line-height:1.5}
+.check-text.done{color:rgba(255,255,255,.35);text-decoration:line-through}
+.row-acts{display:flex;gap:3px;flex-shrink:0;margin-top:1px}
+.row-edit-btn,.row-del-btn{width:24px;height:24px;border-radius:6px;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:12px}
+.row-edit-btn{background:rgba(99,179,237,.09);color:rgba(144,202,249,.55)}
+.row-edit-btn:hover{background:rgba(99,179,237,.25);color:#90caf9}
+.row-del-btn{background:rgba(255,80,80,.07);color:rgba(255,128,128,.45)}
+.row-del-btn:hover{background:rgba(255,80,80,.2);color:#ff8080}
+.pretrip-body{flex:1;min-width:0}
+.pretrip-top{display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap;margin-bottom:3px}
+.pretrip-title{font-size:13px;font-weight:700;color:#fff;flex:1;cursor:pointer;line-height:1.35}
+.pretrip-title.done{color:rgba(255,255,255,.38);text-decoration:line-through}
+.when-badge{font-size:9.5px;font-weight:800;padding:2px 6px;border-radius:7px;flex-shrink:0;white-space:nowrap}
+.when-now{background:rgba(231,76,60,.22);color:#ff8a80;border:1px solid rgba(231,76,60,.28)}
+.when-soon{background:rgba(243,156,18,.18);color:#ffd180;border:1px solid rgba(243,156,18,.28)}
+.when-pre{background:rgba(52,152,219,.18);color:#90caf9;border:1px solid rgba(52,152,219,.28)}
+.when-day{background:rgba(155,89,182,.18);color:#ce93d8;border:1px solid rgba(155,89,182,.28)}
+.pretrip-desc{font-size:11.5px;color:rgba(255,255,255,.55);line-height:1.5;margin-bottom:5px}
+.pretrip-link{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:7px;background:rgba(99,179,237,.12);color:#90caf9;border:1px solid rgba(99,179,237,.22);text-decoration:none}
+.pretrip-link:hover{background:rgba(99,179,237,.22)}
+/* Must Visit */
+.mv-grid{display:flex;flex-direction:column;gap:8px}
+.mv-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:13px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start}
+.mv-card.covered{border-left:3px solid #38ef7d}
+.mv-card.partial{border-left:3px solid #ffd200}
+.mv-card.gap{border-left:3px solid rgba(255,255,255,.2)}
+.mv-icon{font-size:26px;flex-shrink:0;margin-top:1px}
+.mv-body{flex:1;min-width:0}
+.mv-top{display:flex;align-items:flex-start;gap:7px;flex-wrap:wrap;margin-bottom:3px}
+.mv-name{font-size:13.5px;font-weight:800;color:#fff;flex:1}
+.mv-cat{font-size:10px;font-weight:700;padding:2px 7px;border-radius:7px;background:rgba(255,255,255,.09);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.1);white-space:nowrap;flex-shrink:0}
+.mv-why{font-size:12px;color:rgba(255,255,255,.62);line-height:1.55;margin-bottom:5px}
+.mv-status{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.mv-day-badge{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:7px;border:1px solid}
+.mv-day-badge.covered{background:rgba(56,239,125,.1);color:#38ef7d;border-color:rgba(56,239,125,.25)}
+.mv-day-badge.partial{background:rgba(255,210,0,.1);color:#ffd200;border-color:rgba(255,210,0,.25)}
+.mv-day-badge.gap{background:rgba(255,100,100,.08);color:rgba(255,150,150,.7);border-color:rgba(255,100,100,.15)}
+.mv-tip{font-size:11px;color:rgba(255,255,255,.4);font-style:italic}
+.mv-legend{display:flex;gap:12px;flex-wrap:wrap;padding:0 4px 10px;font-size:11px;color:rgba(255,255,255,.45)}
+.mv-legend span{display:flex;align-items:center;gap:5px}
+.mv-legend-dot{width:8px;height:8px;border-radius:50%}
+/* Tips */
+.tips-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tip-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:12px}
+.tip-emoji{font-size:20px;margin-bottom:5px}
+.tip-title{font-size:11px;font-weight:800;margin-bottom:3px}
+.tip-text{font-size:11px;color:rgba(255,255,255,.6);line-height:1.5}
+/* Glance */
+.glance-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:14px 16px}
+.glance-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.glance-row:last-child{border-bottom:none}
+.glance-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.glance-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:#fff;border-radius:7px;padding:3px 9px;font-size:10px;cursor:pointer;font-weight:700;margin-left:auto}
+/* Modals */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;display:none;align-items:center;justify-content:center;padding:14px}
+.modal-overlay.open{display:flex}
+.modal{background:#1a0a00;border:1px solid rgba(255,100,50,.2);border-radius:18px;padding:20px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto}
+.modal h3{font-size:15px;margin-bottom:14px}
+.mfield{margin-bottom:12px}
+.mfield label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.38);margin-bottom:4px}
+.mfield input,.mfield textarea,.mfield select{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:9px;padding:8px 11px;font-size:13px;color:#fff;font-family:inherit;resize:vertical}
+.mfield input:focus,.mfield textarea:focus,.mfield select:focus{outline:none;border-color:rgba(255,100,50,.5)}
+.mfield textarea{min-height:68px;line-height:1.5}
+.mfield select option{background:#1a0a00}
+.modal-btns{display:flex;gap:7px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.modal-btns button{padding:8px 15px;border-radius:9px;border:none;cursor:pointer;font-weight:700;font-size:13px}
+.btn-save{background:linear-gradient(135deg,#e63946,#ff6b35);color:#fff}
+.btn-cancel{background:rgba(255,255,255,.07);color:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.14)!important}
+.btn-del{background:rgba(255,80,80,.13);color:#ff8080;border:1px solid rgba(255,80,80,.22)!important}
+.btn-reset{background:rgba(255,150,50,.1);color:#ffb347;border:1px solid rgba(255,150,50,.22)!important}
+.loading-screen{position:fixed;inset:0;background:#1a0a00;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:200}
+.spin{width:36px;height:36px;border:3px solid rgba(255,255,255,.09);border-top-color:#e63946;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.footer{text-align:center;margin-top:22px;font-size:10px;color:rgba(255,255,255,.2)}
+</style>
+</head>
+<body>
+<div class="loading-screen" id="loadingScreen">
+  <div style="font-size:32px">🏮</div><div class="spin"></div>
+  <p style="font-size:12px;color:rgba(255,255,255,.45)">Loading trip data…</p>
+</div>
+<div id="app" style="display:none">
+
+<div class="site-header">
+  <div class="sync-badge idle" id="syncBadge"><span class="sync-dot"></span><span id="syncLabel">Synced</span></div>
+  <div class="title">Shanghai 2026 🏮</div>
+  <div style="font-size:12px;color:rgba(255,255,255,.45);margin-top:2px">Family Trip Planner</div>
+  <div class="meta-row">
+    <span class="meta-pill">✈️ 4–8 Dec 2026</span>
+    <span class="meta-pill">🏨 People's Square / Nanjing Rd</span>
+    <span class="meta-pill">👨‍👩‍👦 3 Pax</span>
+  </div>
+  <div class="status-row">
+    <span class="status-pill done">✅ SQ828 — SIN→PVG Fri 4 Dec 07:20</span>
+    <span class="status-pill done">✅ SQ833 — PVG→SIN Tue 8 Dec 16:25</span>
+    <span class="status-pill warn">⚡ VPN — install BEFORE leaving SG!</span>
+  </div>
+</div>
+
+<div class="day-nav" id="dayNav"></div>
+<div class="day-banner-wrap" id="dayBannerWrap"></div>
+<div class="blocks" id="blocksContainer"></div>
+
+<div class="section">
+  <div class="section-toggle" id="secTogglePretrip" onclick="toggleSection('pretrip')">
+    <div><div class="sec-title">🗂️ Pre-Trip Requirements</div><div class="sec-meta" id="secMetaPretrip">Loading…</div></div>
+    <div class="sec-right">
+      <button class="section-add-btn" onclick="event.stopPropagation();openPretripModal(null)">+ Add</button>
+      <div class="sec-chevron">▼</div>
+    </div>
+  </div>
+  <div class="section-body" id="secBodyPretrip">
+    <div style="font-size:11px;color:rgba(255,255,255,.35);padding:0 4px 8px">Tap ✓ to mark done · ✏️ edit · 🗑️ delete</div>
+    <div class="list-card" id="pretripContainer"></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-toggle" id="secToggleBooking" onclick="toggleSection('booking')">
+    <div><div class="sec-title">📋 Booking Checklist</div><div class="sec-meta" id="secMetaBooking">Loading…</div></div>
+    <div class="sec-right">
+      <button class="section-add-btn" onclick="event.stopPropagation();openBookingModal(null)">+ Add</button>
+      <div class="sec-chevron">▼</div>
+    </div>
+  </div>
+  <div class="section-body" id="secBodyBooking">
+    <div style="font-size:11px;color:rgba(255,255,255,.35);padding:0 4px 8px">Tap ✓ to mark done · ✏️ edit · 🗑️ delete</div>
+    <div class="list-card" id="checklistContainer"></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-toggle" id="secToggleMustvisit" onclick="toggleSection('mustvisit')">
+    <div><div class="sec-title">📍 Must Visit — First Timer</div><div class="sec-meta">16 Shanghai + Hangzhou spots · coverage at a glance</div></div>
+    <div class="sec-right"><div class="sec-chevron">▼</div></div>
+  </div>
+  <div class="section-body" id="secBodyMustvisit">
+    <div class="mv-legend">
+      <span><div class="mv-legend-dot" style="background:#38ef7d"></div>In your itinerary</span>
+      <span><div class="mv-legend-dot" style="background:#ffd200"></div>Partly covered</span>
+      <span><div class="mv-legend-dot" style="background:rgba(255,120,120,.6)"></div>Not in itinerary</span>
+    </div>
+    <div class="mv-grid" id="mustvisitContainer"></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-toggle" id="secToggleTips" onclick="toggleSection('tips')">
+    <div><div class="sec-title">💡 Trip Tips</div><div class="sec-meta">10 Shanghai-specific tips</div></div>
+    <div class="sec-right"><div class="sec-chevron">▼</div></div>
+  </div>
+  <div class="section-body" id="secBodyTips">
+    <div class="tips-grid" id="tipsContainer"></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-toggle" id="secToggleGlance" onclick="toggleSection('glance')">
+    <div><div class="sec-title">📅 At a Glance</div><div class="sec-meta">All 5 days</div></div>
+    <div class="sec-right"><div class="sec-chevron">▼</div></div>
+  </div>
+  <div class="section-body" id="secBodyGlance">
+    <div class="glance-card" id="glanceContainer"></div>
+  </div>
+</div>
+
+<div class="footer">Shanghai 2026 · Syncs via Cloudflare · tong.website 🏮</div>
+</div>
+
+<!-- Block Modal -->
+<div class="modal-overlay" id="blockModal" onclick="closeModal('blockModal',event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3 id="blockModalTitle">✏️ Edit Block</h3>
+    <div class="mfield"><label>Icon</label><input id="bm_icon" maxlength="4"></div>
+    <div class="mfield"><label>Time</label><input id="bm_time" placeholder="e.g. 10:00–12:00"></div>
+    <div class="mfield"><label>Title</label><input id="bm_title"></div>
+    <div class="mfield"><label>Details</label><textarea id="bm_detail" rows="4"></textarea></div>
+    <div class="mfield"><label>Route / Transport</label><input id="bm_route"></div>
+    <div class="mfield"><label>Tag / Reminder</label><input id="bm_tag"></div>
+    <div class="modal-btns">
+      <button class="btn-del" id="blockDelBtn" onclick="deleteEditingBlock()" style="display:none">🗑️ Delete</button>
+      <button class="btn-reset" id="blockResetBtn" onclick="resetBlock()" style="display:none">↺ Reset</button>
+      <button class="btn-cancel" onclick="closeModal('blockModal')">Cancel</button>
+      <button class="btn-save" onclick="saveBlock()">Save</button>
+    </div>
+  </div>
+</div>
+<!-- Booking Modal -->
+<div class="modal-overlay" id="bookingModal" onclick="closeModal('bookingModal',event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3 id="bookingModalTitle">Add Booking</h3>
+    <div class="mfield"><label>Icon</label><input id="book_icon" maxlength="4"></div>
+    <div class="mfield"><label>Description</label><textarea id="book_text" rows="2"></textarea></div>
+    <div class="mfield"><label>Status</label>
+      <select id="book_done"><option value="false">⬜ Not confirmed yet</option><option value="true">✅ Confirmed / done</option></select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-del" id="bookingDelBtn" onclick="deleteBooking()" style="display:none">🗑️ Delete</button>
+      <button class="btn-cancel" onclick="closeModal('bookingModal')">Cancel</button>
+      <button class="btn-save" onclick="saveBooking()">Save</button>
+    </div>
+  </div>
+</div>
+<!-- Pretrip Modal -->
+<div class="modal-overlay" id="pretripModal" onclick="closeModal('pretripModal',event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3 id="pretripModalTitle">Add Pre-Trip Task</h3>
+    <div class="mfield"><label>Icon</label><input id="pt_icon" maxlength="4"></div>
+    <div class="mfield"><label>Title</label><input id="pt_title"></div>
+    <div class="mfield"><label>Description</label><textarea id="pt_desc" rows="3"></textarea></div>
+    <div class="mfield"><label>When</label>
+      <select id="pt_when">
+        <option value="now">🔴 Do Now</option>
+        <option value="soon">🟡 2–4 Weeks Before</option>
+        <option value="pre">🔵 48hrs Before Flight</option>
+        <option value="day">🟣 On Arrival</option>
+      </select>
+    </div>
+    <div class="mfield"><label>Link URL (optional)</label><input id="pt_link" type="url" placeholder="https://…"></div>
+    <div class="mfield"><label>Link Label (optional)</label><input id="pt_linkLabel"></div>
+    <div class="modal-btns">
+      <button class="btn-del" id="pretripDelBtn" onclick="deletePretrip()" style="display:none">🗑️ Delete</button>
+      <button class="btn-cancel" onclick="closeModal('pretripModal')">Cancel</button>
+      <button class="btn-save" onclick="savePretrip()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DAYS=[
+{date:"Fri 4 Dec",label:"Day 1",theme:"Arrival + The Bund",emoji:"🌆",color:"#E63946",accent:"#B71C1C",iconBg:"#FFCDD2",
+blocks:[
+{time:"12:45",icon:"✈️",title:"Land at Pudong International (PVG T2)",detail:"SQ828 arrives at Terminal 2. Clear immigration — first time for your wife and son so allow 30–40 min at the queue. Collect bags, then head to arrivals hall.\n\nImportant on landing: switch on your eSIM now. Turn VPN on before you open any apps. WeChat and Alipay will work without VPN — but Google Maps, Instagram, WhatsApp all need it.",route:null,tag:"🔴 Turn VPN on immediately on landing"},
+{time:"13:45",icon:"🚐",title:"Private Transfer → Intercity Hotel",detail:"Pre-booked private transfer from PVG T2 arrivals hall direct to the hotel. Confirm driver contact and meetup point when you receive the booking confirmation.\n\nDoor to door — no need to navigate the Maglev or Metro with luggage on arrival day. ~45–60 min depending on traffic.",route:"PVG T2 Arrivals → Private Transfer → Intercity Hotel Shanghai (direct)",tag:"✅ Booked — confirm driver WhatsApp contact before departure"},
+{time:"~15:00",icon:"🏨",title:"Check in — Intercity Hotel Shanghai Nanjing Road",detail:"Intercity Hotel Shanghai Nanjing Road Pedestrian Street The Bund — 4 nights (4–8 Dec).\n\nPrime location: right on Nanjing Road pedestrian street, a short walk from People's Square and 20 min on foot to The Bund. Step out the door and you're already in the heart of old Shanghai.\n\nGet settled, freshen up. Dinner is 2–3 hours away.",route:null,tag:"✅ Booked — 4 nights"},
+{time:"16:00",icon:"🚶",title:"East Nanjing Road pedestrian street",detail:"Step out of the hotel and you're on it. East Nanjing Road (南京东路) is one of the world's busiest commercial streets — 1.2km fully pedestrianised stretch from People's Square to The Bund.\n\nThis is your orientation walk. Don't shop seriously today — just absorb the scale, the neon, the crowds, the Christmas decorations (December lighting here is spectacular). Ends at the Bund riverfront.",route:null,tag:null},
+{time:"17:00",icon:"🌃",title:"The Bund — sunset into night",detail:"The Bund (外滩) is the defining Shanghai experience. A 1.8km riverside promenade of colonial-era buildings facing the Pudong skyline across the Huangpu River.\n\nDecember timing is perfect: sunset at ~17:00 means you catch golden hour, the Pudong towers lit against a darkening sky, and then full night view — all in one visit.\n\nWhat to see:\n• The full promenade walk — colonial facades behind you, futuristic skyline ahead\n• Oriental Pearl Tower (pink sphere), Shanghai Tower (tallest in China at 632m), World Financial Center (the 'bottle opener'), Jin Mao Tower\n• Garden Bridge (Waibaidu Bridge) at the north end for a classic angle\n• The Bund at night with Christmas lights in December is genuinely spectacular\n\nAllow 1–1.5 hours. Dress for wind off the river — December riverfront is cold.",route:null,tag:"🧥 Cold at night on the riverfront — dress in layers"},
+{time:"18:30",icon:"🍽️",title:"Dinner near The Bund",detail:"Tonight keep it simple — you've just arrived. See Recommended Eats below.",route:null,tag:null}
+]},
+{date:"Sat 5 Dec",label:"Day 2",theme:"French Concession + Old City",emoji:"🌳",color:"#2E7D32",accent:"#1B5E20",iconBg:"#C8E6C9",
+blocks:[
+{time:"08:00",icon:"☕",title:"Breakfast — start near hotel",detail:"Local breakfast is excellent and cheap. Look for a hole-in-the-wall serving:\n• Shengjianbao (pan-fried pork buns) — crispy bottom, juicy inside, ¥8–12 for 4\n• Ci fan tuan (sticky rice roll stuffed with youtiao and pork floss, ¥8)\n• Doujiang (warm soy milk) + youtiao (fried dough) — the classic Shanghai pairing\n• Or any local noodle shop for a bowl of thin noodles in broth\n\nAlternatively hotel breakfast if you want a slow start.",route:null,tag:null},
+{time:"09:00",icon:"🚕",title:"Didi / Metro to Wukang Road",detail:"Didi is the easier option — direct to Wukang Road, ~¥25–35, 20 min. Or Metro Line 1 from People's Square to Changshu Road (4 stops, ¥3) then a short walk.",route:"Didi: hotel → Wukang Road (~20 min) OR Metro Line 1: People's Square → Changshu Road + walk",tag:null},
+{time:"09:30–11:30",icon:"🌳",title:"Wukang Road / Anfu Road / French Concession walk",detail:"The French Concession (法租界) is old Shanghai at its most charming — plane-tree-lined avenues, art deco villas, boutique cafés, and a completely different energy from the modern city.\n\nMust walk:\n• Wukang Road (武康路) — most photographed street in Shanghai. Wukang Mansion at the Huaihai Road intersection is Shanghai's 'flatiron building' — triangular brick art deco tower built 1924. Perfect photo stop.\n• Anfu Road — indie boutiques, bookshops, coffee. Very walkable.\n• Fuxing Road — tree-canopied boulevard, pleasant for a slow stroll\n\nThis area rewards slow walking. No need to rush — 2 hours here is right.",route:null,tag:null},
+{time:"11:30–13:00",icon:"🎨",title:"Tianzifang OR relaxed café / lunch",detail:"Two options — pick based on energy and time:\n\nOption A — Tianzifang (田子坊):\nA maze of shikumen lanes converted into an artsy craft quarter. Small independent shops, ceramics, magnets, tea ware, street food, photography. 15 min by Didi from Wukang Road. Don't go after 13:00 on Saturday — gets very crowded.\n\nOption B — Relaxed café / early lunch in the French Concession:\nIf you're enjoying the neighbourhood, just find a café on Anfu Road or Fuxing Road and sit down. The concession has excellent coffee spots and casual lunch places. No need to rush to another attraction.\n\nEither works — the day has plenty without Tianzifang if you want a slower pace.",route:"Didi: Wukang Road → Tianzifang (~15 min, ¥20) if taking Option A",tag:null},
+{time:"14:00–16:00",icon:"🏯",title:"Yu Garden (豫园) + Yuyuan Bazaar",detail:"Yu Garden (豫园) is a classical Ming dynasty garden built 1559 — pavilions, rockeries, ponds, moon gates, zigzag bridges. One of the finest classical gardens in China. Entry ¥40.\n\nYuyuan Bazaar surrounds it — sprawling old-style commercial area, touristy but atmospheric:\n✓ Worth it: Nanxiang Steamed Bun Restaurant (XLB since 1900, queue for upper floors), crab roe pastries, osmanthus rice cake\n✗ Skip: the souvenir stalls are all identical\n\nAllow 1.5–2 hours for both.",route:"Didi from French Concession / Tianzifang → Yu Garden (~15 min)",tag:null},
+{time:"16:30–18:00",icon:"🏙️",title:"Xintiandi",detail:"Preserved 1920s shikumen architecture in an upscale dining and lifestyle complex. Beautiful for an evening walk — the stone-gate lane architecture is at its best in the early evening light.\n\nNearby: the Site of the First National Congress of the CCP (where the Chinese Communist Party was founded in 1921) — free entry, surprisingly interesting historical context.",route:"Walk from Yu Garden (~20 min) or short Didi",tag:null},
+{time:"18:00",icon:"🍽️",title:"Dinner at Xintiandi",detail:"See Recommended Eats below. Tonight is the night for a proper sit-down Shanghainese meal — you're already in Xintiandi which has excellent options.",route:null,tag:null}
+]},
+{date:"Sun 6 Dec",label:"Day 3",theme:"Hangzhou Day Trip",emoji:"🍵",color:"#1565C0",accent:"#0D47A1",iconBg:"#BBDEFB",
+blocks:[
+{time:"07:00",icon:"⏰",title:"Early start — pack day bag",detail:"Light day bag only. Bring layers — Hangzhou in December is 3–8°C, slightly colder than Shanghai. Scarves and a proper jacket are essential.\n\nQuick breakfast at hotel or grab something to eat at Hongqiao station.",route:null,tag:"🧥 Hangzhou is colder than Shanghai in December — warm layers essential"},
+{time:"07:10",icon:"🚕",title:"Didi to Hongqiao Railway Station",detail:"Leave hotel at 07:10–07:15. Didi direct to Hongqiao Railway Station — ~40–50 min, ¥80–100. Easier than the metro with a day bag and three people, and gives you buffer time to find the right platform.\n\nHongqiao is enormous — follow signs for 高铁 (High-Speed Rail) not the metro or the domestic terminal. Allow 15–20 min to navigate to your platform once inside.",route:"Didi: Intercity Hotel → Hongqiao Railway Station (~40–50 min, ¥80–100)",tag:null},
+{time:"08:30",icon:"🚄",title:"High-speed train to Hangzhou East",detail:"Multiple G-trains (high-speed) per hour from Hongqiao to Hangzhou East. Journey time: 45 min–1 hour depending on train. Cost: ¥73–100 second class.\n\nBook in advance on Trip.com (English interface) or railway.com.cn. Select seats in the same row — G-trains are comfortable. Second class is fine for this distance.",route:"Hongqiao Railway Station → Hangzhou East Station (G-train, ~1 hr, ¥73–100)",tag:"📱 Book tickets on Trip.com before departure"},
+{time:"~09:30",icon:"🚕",title:"Arrive Hangzhou East → West Lake",detail:"Use Didi for all transport in Hangzhou — fixed price, no language barrier, no haggling. Don't take random taxis outside the station.\n\nDidi: Hangzhou East → West Lake ~20 min, ¥30–40.\n\nDidi throughout the day: West Lake → Longjing Tea Village (~20 min, ¥25) → Hefang Street (~15 min, ¥20) → Hangzhou East (~20 min, ¥30).",route:"Didi: Hangzhou East → West Lake (~20 min, ¥30–40)",tag:"🚕 Use Didi for all Hangzhou transport today"},
+{time:"10:00–12:30",icon:"🏞️",title:"West Lake (西湖)",detail:"West Lake is one of China's most celebrated landscapes — a UNESCO World Heritage Site. In December it's misty, quiet, and atmospheric rather than the summer crowds.\n\nMust do:\n• Su Causeway (苏堤) — 2.8km tree-lined walkway across the lake, the best walk. Willow trees, arched bridges, mountain backdrop.\n• Broken Bridge (断桥) — iconic stone arch bridge, romantically associated with the Legend of the White Snake\n• Leifeng Pagoda (雷峰塔) — rebuilt pagoda on the southern shore, great elevated view (entry ¥40)\n• Boat ride across the lake — ¥45/person, 30 min, excellent views of the pagoda and hills\n\nDecember light on the lake is soft and beautiful. Less commercial than peak season.",route:null,tag:null},
+{time:"12:30",icon:"🍛",title:"Lunch — Hangzhou cuisine",detail:"See Recommended Eats below. Don't leave Hangzhou without trying Dongpo Pork and West Lake Vinegar Fish — both were invented here.",route:null,tag:null},
+{time:"14:00",icon:"🍵",title:"Longjing Tea Village (龙井村)",detail:"Longjing (Dragon Well) tea is the most famous green tea in China, grown on the hillsides above Hangzhou. December is off-season for picking but the village is still beautiful and worth visiting.\n\nDo:\n• Walk through the terraced tea plantations — still green in December\n• Stop at a tea house for a properly brewed cup of aged Longjing (¥30–80 per cup)\n• Buy tea direct from villagers — much cheaper than city shops, and you can taste first. Don't buy from aggressive vendors on the street — go into proper farmhouses.\n\nTaxi/Didi from West Lake: ~20 min, ¥25.",route:"Didi: West Lake → Longjing Village (~20 min, ¥25)",tag:null},
+{time:"15:30",icon:"🏪",title:"Hefang Street (河坊街) snacks",detail:"Hefang Street is Hangzhou's pedestrianised old street — traditional snacks, medicine shops, street food. Good final Hangzhou stop before heading back.\n\nTry:\n• Osmanthus cake (桂花糕) — Hangzhou's signature sweet\n• Cong bao hui (stir-fried rice cake)\n• Stinky tofu if you're brave (臭豆腐)\n• Any Hangzhou tea to buy as a gift",route:null,tag:null},
+{time:"17:00",icon:"🚄",title:"Train back to Shanghai Hongqiao",detail:"Didi to Hangzhou East station (~20 min). Take any available G-train back to Hongqiao — no need to pre-book return, just queue at the ticket office or use the self-service machine with your passport.\n\nFrom Hongqiao: Didi back to the hotel (~40–50 min, ¥80–100). Easier than the metro after a full day.",route:"Didi → Hangzhou East → G-train → Hongqiao → Didi → hotel",tag:null},
+{time:"19:30",icon:"🍽️",title:"Dinner back in Shanghai",detail:"You'll be tired but hungry after a long day. Keep dinner nearby — see Recommended Eats below for easy options near the hotel.",route:null,tag:null}
+]},
+{date:"Mon 7 Dec",label:"Day 4",theme:"Pudong + Gundam + Final Shanghai",emoji:"🤖",color:"#6A1B9A",accent:"#4A148C",iconBg:"#E1BEE7",
+blocks:[
+{time:"08:30",icon:"🍜",title:"Breakfast — scallion oil noodles",detail:"Cong you ban mian (葱油拌面) — Shanghai's signature breakfast noodle. Thin wheat noodles tossed in scallion-infused lard with soy sauce. Incredibly simple, incredibly good. ¥12–18.\n\nFind any local noodle shop (面馆) near the hotel — look for a small place with people eating at tiny tables. This is the most authentic Shanghai breakfast experience.",route:null,tag:null},
+{time:"09:30",icon:"🚇",title:"Metro to Lujiazui (Pudong)",detail:"Cross under the Huangpu River to Pudong — the modern financial district. The contrast with the colonial Bund you walked last night is the whole point.",route:"Metro Line 2: People's Square → Lujiazui (2 stops, 6 min, ¥3)",tag:null},
+{time:"10:00–12:00",icon:"🏙️",title:"Shanghai Tower — clear day only",detail:"Check the weather before committing. December in Shanghai is frequently hazy — if visibility is poor, the tower is not worth ¥180/person.\n\n✅ Clear day → Go up. Shanghai Tower (上海中心大厦) is 632m, floor 118 observation deck at 546m — the highest in the world. The glass spiral exterior means views change as you turn. Pre-book at sspct.com to skip queues. Elevator takes 55 seconds at 18m/s.\n\n☁️ Hazy / cloudy day → Skip the tower. Go straight to the Lujiazui waterfront instead. The ground-level views of the Bund from across the river are excellent regardless of haze, and you save ¥540 for the family.\n\nEither way, the Lujiazui skyline cluster (Shanghai Tower + SWFC 'bottle opener' + Jin Mao Tower) is impressive just to walk among.",route:"Walk from Lujiazui metro exit (5 min)",tag:"🌤️ Decide on the morning based on visibility — check weather the night before"},
+{time:"12:00",icon:"🌊",title:"Lujiazui waterfront — reverse Bund view",detail:"Walk from the towers down to the Lujiazui riverfront promenade. You're now looking BACK at The Bund from the Pudong side — the colonial facades you walked last night, from across the water. The classic Shanghai postcard shot.\n\nThis is actually the better photo of The Bund — with all the colonial buildings in frame and the river in front. Bring everyone here for the group photo.",route:null,tag:null},
+{time:"13:00",icon:"🍱",title:"Lunch — Pudong / IFC mall",detail:"See Recommended Eats below. IFC Mall in Lujiazui has reliable options including Din Tai Fung.",route:null,tag:null},
+{time:"14:15–16:45",icon:"🤖",title:"Gundam Base Shanghai",detail:"Gundam Base (ガンダムベース) is Bandai Spirits' flagship Gunpla store chain — the definitive destination for Gundam model kits, limited editions, and collectibles. The Shanghai branch has a large Gundam display and the most comprehensive Gunpla selection outside Japan.\n\n⚠️ Verify current location before going — confirm the address on the Gundam Base official site or Google Maps closer to your trip date, as mall tenants change.\n\nLikely area: Lujiazui / Pudong mall district, or check Joy City Shanghai (大悦城) and IAPM Mall.\n\nFor your son: this is the Akihabara equivalent moment for this trip. Budget time and luggage capacity accordingly.",route:null,tag:"⚠️ Verify exact location before visiting — check gundambase.net or Google Maps"},
+{time:"16:30",icon:"🛍️",title:"East Nanjing Road — final shopping sweep",detail:"Head back to the hotel side for a final pass at East Nanjing Road and nearby malls:\n• Raffles City Shanghai (People's Square) — good mix of brands\n• Nanjing Road itself for any last souvenirs\n• The Bund Finance Center area for higher-end shopping\n• APM Mall on Nanjing East Road for mid-range brands\n\nAlso: Yuyuan Bazaar area if you want traditional Chinese goods (tea, silk, ceramics) — more options than the tourist stalls inside.",route:null,tag:null},
+{time:"19:00",icon:"🥂",title:"Best dinner of the trip",detail:"Tonight is the one to make count — last proper night in Shanghai. See Recommended Eats below for the top options. Book in advance for Fu 1088 or any of the sit-down restaurants.",route:null,tag:"🎉 Last night in Shanghai — book the restaurant in advance"}
+]},
+{date:"Tue 8 Dec",label:"Day 5",theme:"Departure",emoji:"🛫",color:"#D35400",accent:"#A04000",iconBg:"#FAD7A0",
+blocks:[
+{time:"08:00",icon:"☕",title:"Final morning — last Shanghai breakfast",detail:"One last proper Shanghai breakfast. If you haven't had shengjianbao from Yang's Dumplings yet, today is your last chance. Or a final bowl of scallion oil noodles.\n\nPack everything the night before except toiletries. Do a final room sweep: chargers, safe, bathroom.",route:null,tag:"⚠️ Pack the night before — checkout and airport by midday"},
+{time:"09:00–11:30",icon:"🛍️",title:"Free morning — last walk or shopping",detail:"You have ~3 hours before you need to leave for the airport. Options:\n• Final walk on The Bund in daylight (you saw it at night — the morning light on the colonial facades is completely different)\n• Last coffee in the French Concession\n• Any remaining shopping on Nanjing Road\n• Shanghai Museum (free, right on People's Square — world-class collection of ancient Chinese bronzes, ceramics, paintings) if you haven't been. 2 hours minimum.\n\nDon't overplan — leave time to enjoy it.",route:null,tag:null},
+{time:"12:00",icon:"🏨",title:"Checkout + luggage sorted",detail:"Check out. Hotel can store luggage if you want to use the remaining time without bags. Arrange Didi or Maglev route in advance.",route:null,tag:null},
+{time:"12:30",icon:"🚄",title:"Head to PVG — allow plenty of time",detail:"Flight SQ833 departs 16:25 from PVG T2. Be at the airport by 14:00 minimum.\n\nRoute options:\n• Metro Line 2 to Longyang Road + Maglev to PVG: ~55 min total, ¥54/person. Most reliable.\n• Didi direct: ~¥150–180, 50–70 min (more comfortable with final luggage)\n\nLeave hotel by 12:30. Don't cut this close — airport queues on a Tuesday afternoon can be long.",route:"Metro Line 2: People's Square → Longyang Road → Maglev → PVG T2",tag:"⚠️ Leave hotel by 12:30 — flight is 16:25, check-in closes 14:25"},
+{time:"~14:15",icon:"🛂",title:"Check in + security + immigration",detail:"PVG T2 international departures. SQ828 check-in counters — confirm terminal/check-in area. Allow: check-in (20 min), immigration (20–30 min), security (15 min).\n\nPVG T2 has good food options landside and airside. Have one final bowl of something if there's time.",route:null,tag:null},
+{time:"16:25",icon:"✈️",title:"SQ833 — Shanghai Pudong → Singapore Changi",detail:"Airbus A380-800, economy class. Arrives SIN 22:15. Safe flight home.",route:null,tag:null}
+]}
+];
+
+const BLOCK_EATS={
+"0_5":[
+{icon:"🥟",name:"Jia Jia Tang Bao (佳家汤包)",type:"Xiaolongbao — near People's Square",why:"One of Shanghai's most beloved xiaolongbao spots. Tiny, no-frills, packed with locals. Crab roe XLB (蟹粉汤包) is the order. Queue is expected but moves fast.",tag:"⭐ Top Pick"},
+{icon:"🌟",name:"Mr & Mrs Bund",type:"French-Shanghainese — The Bund, splurge",why:"Paul Pairet's casual bistro on The Bund. Excellent food, great atmosphere. Best for a first night splurge if you want something special.",tag:"Splurge"},
+{icon:"🏮",name:"Lost Heaven (花马天堂)",type:"Yunnan cuisine — near The Bund",why:"Atmospheric Yunnan restaurant in a stunning colonial-era building. Minority Chinese cuisine — very different from standard Shanghainese. Reliably excellent.",tag:null}
+],
+"1_0":[
+{icon:"🥟",name:"Yang's Dumplings (小杨生煎)",type:"Shengjianbao — pan-fried pork buns",why:"The single most important Shanghai street food. Crispy pan-fried bottom, juicy pork and broth inside. ¥8–12 for 4 pieces. Multiple locations on Nanjing Road. EAT THESE.",tag:"⭐ Must Eat"},
+{icon:"🍳",name:"Local ci fan tuan stall",type:"Breakfast — sticky rice roll",why:"Sticky rice stuffed with youtiao, pork floss, preserved egg. ¥8. Classic Shanghai street breakfast. Find any stall near the metro.",tag:null}
+],
+"1_2":[
+{icon:"🥟",name:"Yang's Dumplings (小杨生煎)",type:"Lunch or snack — Tianzifang option block",why:"If you head to Tianzifang, Yang's Dumplings has a nearby location. Queue moves fast. The single most important Shanghai street food stop.",tag:"⭐ Must Eat"},
+{icon:"🍜",name:"Jesse Restaurant (鸳鸯楼)",type:"Sit-down lunch — relaxed café option",why:"If skipping Tianzifang for a relaxed lunch, Jesse is the best Shanghainese home cooking nearby. Hong shao rou, scallion noodles.",tag:"⭐ Top Pick"},
+{icon:"🍡",name:"Tianzifang snack stalls",type:"Street food inside Tianzifang lanes — if going",why:"Crab roe spring rolls, sesame pastries, hot douhua (silken tofu). Graze while you browse.",tag:null}
+],
+"1_3":[
+{icon:"🥟",name:"Nanxiang Steamed Bun Restaurant (南翔馒头店)",type:"XLB — original 1900 location, Yu Garden",why:"The original xiaolongbao restaurant, inside Yuyuan Bazaar since 1900. Queue is long (up to 45 min) but crab roe version is worth it. Queue for upper floors, not the ground floor tourist counter.",tag:"⭐ Top Pick"},
+{icon:"🍡",name:"Yuyuan Bazaar crab roe snacks",type:"Street food — crab roe pastries, rice cakes",why:"The stalls around Yu Garden sell crab roe-filled pastries (蟹粉酥) and osmanthus rice cake. Buy and eat while walking.",tag:null}
+],
+"1_5":[
+{icon:"🏛️",name:"Fu 1088 (福1088)",type:"Dinner — premium Shanghainese, French Concession",why:"Set in a restored 1930s villa, multiple rooms, refined traditional Shanghai cuisine. Book in advance.",tag:"⭐ Splurge Pick"},
+{icon:"🍜",name:"Jesse Restaurant (鸳鸯楼)",type:"Dinner — classic Shanghainese home cooking",why:"More casual than Fu 1088 but equally authentic. Hong shao rou, braised fish head, scallion noodles.",tag:"⭐ Top Pick"}
+],
+"2_4":[
+{icon:"🐷",name:"Lou Wai Lou (楼外楼)",type:"Iconic Hangzhou restaurant — West Lake",why:"The most famous restaurant in Hangzhou, on the lake since 1848. Must order: Dongpo Pork (东坡肉) and West Lake Vinegar Fish (西湖醋鱼). Touristy but historically significant.",tag:"⭐ Top Pick"},
+{icon:"🍜",name:"Zhi Wei Guan (知味观)",type:"Traditional Hangzhou — more casual",why:"Cheaper and more local-feeling than Lou Wai Lou. Same Dongpo pork, beggar's chicken, and Hangzhou noodles. Multiple locations near West Lake.",tag:null}
+],
+"2_5":[
+{icon:"🍰",name:"Osmanthus cake (桂花糕)",type:"Hefang Street sweet — Hangzhou signature",why:"Hangzhou's most iconic sweet. Soft, fragrant with osmanthus flower. Eat fresh and warm from the street stall.",tag:"⭐ Must Try"},
+{icon:"🍢",name:"Stinky tofu (臭豆腐)",type:"Street food — brave option",why:"Deep-fried fermented tofu. Smells alarming, tastes excellent. Hangzhou street version is milder than the Hunan style. Worth trying at least once.",tag:null}
+],
+"2_6":[
+{icon:"🍜",name:"Comfortable dinner near hotel",type:"Back in Shanghai — keep it easy",why:"After a long day out, keep dinner close to the hotel. A bowl of wonton soup (云吞) or local noodles from any side-street restaurant. You've eaten well in Hangzhou.",tag:null}
+],
+"3_3":[
+{icon:"🥟",name:"Din Tai Fung — IFC Mall",type:"Xiaolongbao — reliable, international standard",why:"Consistent quality, English menu, air-conditioned. Good for a relaxed lunch if you want reliable XLB without street-food-hunting.",tag:null},
+{icon:"🍜",name:"Crystal Jade — IFC Mall",type:"Shanghainese / Cantonese — IFC L3",why:"Reliable Shanghainese dishes in a clean setting. La mian (hand-pulled noodles) and XLB both good.",tag:null}
+],
+"3_6":[
+{icon:"🏮",name:"Fu 1088 (福1088)",type:"Best Shanghainese dining — French Concession villa",why:"If you haven't been yet, make tonight the night. 1930s villa setting, multi-room, refined Shanghainese cuisine. One of the best restaurants in the city. Book at least a few days ahead.",tag:"⭐ Top Pick Tonight"},
+{icon:"🔥",name:"Haidilao Hot Pot (海底捞)",type:"Premium hot pot — multiple locations",why:"The most famous hot pot chain in China. Exceptional service (they entertain you while you wait), fresh ingredients, endless condiment bar. Good for a lively family final dinner.",tag:"⭐ Family Favourite"},
+{icon:"🐟",name:"Chun (椿)",type:"Shanghainese bistro — French Concession",why:"Modern take on classic Shanghai home cooking. Excellent hong shao rou, hairy tofu, and seasonal dishes. More accessible than Fu 1088.",tag:null}
+],
+"4_0":[
+{icon:"🥟",name:"Yang's Dumplings — final shengjianbao",type:"One last round before the airport",why:"If this is your last morning and you haven't had enough of these — now is the time. Take-away bag to eat on the go.",tag:"⭐ Last Chance"}
+]
+};
+
+const DEFAULT_BOOKINGS=[
+{id:"b0",icon:"✈️",text:"SQ828 — SIN (T3) → PVG (T2), Fri 4 Dec, 07:20–12:45 — confirmed",done:true},
+{id:"b1",icon:"✈️",text:"SQ833 — PVG (T2) → SIN, Tue 8 Dec, 16:25–22:15 — confirmed",done:true},
+{id:"b1b",icon:"🚐",text:"Private transfer — PVG T2 → Intercity Hotel, Fri 4 Dec, ~13:45 — confirmed",done:true},
+{id:"b2",icon:"🏨",text:"Intercity Hotel Shanghai Nanjing Road Pedestrian Street The Bund — 4 nights (4–8 Dec) — confirmed",done:true},
+{id:"b3",icon:"🚄",text:"Hangzhou HSR tickets — Hongqiao → Hangzhou East, Sun 6 Dec (~08:30 train)",done:false},
+{id:"b4",icon:"🏙️",text:"Shanghai Tower — pre-book only if visibility is good (sspct.com) — skip on hazy days",done:false},
+{id:"b5",icon:"🏮",text:"Fu 1088 restaurant — book in advance for Mon 7 Dec dinner",done:false},
+{id:"b6",icon:"🔥",text:"Haidilao Hot Pot — confirm location and book if preferred for final dinner",done:false},
+{id:"b7",icon:"🏯",text:"Yu Garden entry tickets — ¥40/person (can buy at gate, but check peak queues)",done:false},
+{id:"b8",icon:"🏞️",text:"Leifeng Pagoda, Hangzhou — ¥40/person entry",done:false}
+];
+
+const DEFAULT_PRETRIP=[
+{id:"p0",icon:"🔒",title:"Install VPN BEFORE leaving Singapore",desc:"Critical — you cannot download VPN apps inside China. Get ExpressVPN, NordVPN, or Astrill. Test it works. This is non-negotiable for WhatsApp, Google Maps, Instagram.",when:"now",whenLabel:"Do NOW — Before Departure",link:"https://www.expressvpn.com",linkLabel:"ExpressVPN"},
+{id:"p1",icon:"🛂",title:"No visa required — Singaporeans get 30-day visa-free to China",desc:"Confirmed as of 2024 mutual visa-free policy between Singapore and China. Valid for all 3 pax. No action needed — just arrive with valid passports.",when:"now",whenLabel:"FYI — No action needed",link:null,linkLabel:null},
+{id:"p2",icon:"🛂",title:"Check all 3 passports — valid + blank pages",desc:"China requires at least 2 blank pages. Check all expiry dates. Must be valid for full stay + buffer.",when:"now",whenLabel:"Do Now",link:null,linkLabel:null},
+{id:"p3",icon:"💳",title:"Set up WeChat Pay international card linking",desc:"You already have WeChat Pay — ensure your card is still linked and functional. Top up balance or confirm international card still works. Your wife and son should set up their own if they don't have it.",when:"now",whenLabel:"Do Now",link:"https://pay.weixin.qq.com/index.php/public/wechatpay_en",linkLabel:"WeChat Pay"},
+{id:"p4",icon:"💳",title:"Set up Alipay international for wife and son",desc:"You already have Alipay. Get your wife and son set up — Alipay International version accepts foreign cards. Essential for markets, smaller restaurants, and anywhere WeChat Pay isn't accepted.",when:"now",whenLabel:"Do Now",link:"https://intl.alipay.com",linkLabel:"Alipay International"},
+{id:"p5",icon:"🚗",title:"Download and set up Didi app",desc:"Chinese equivalent of Grab/Uber. Accepts international payment. Essential for getting around Shanghai and Hangzhou without haggling with taxis. Set up for all pax who have smartphones.",when:"now",whenLabel:"Do Now",link:"https://www.didiglobal.com",linkLabel:"Didi App"},
+{id:"p6",icon:"📱",title:"Download Pleco Chinese dictionary app",desc:"Best Chinese dictionary app — works offline, essential for reading menus and signs. Also download Google Translate Chinese offline pack (works without internet via camera).",when:"now",whenLabel:"Do Now",link:"https://www.pleco.com",linkLabel:"Pleco App"},
+{id:"p7",icon:"🏥",title:"Travel insurance for all 3 pax",desc:"China has no healthcare agreement with Singapore. Medical costs can be very high. Buy comprehensive cover including medical evacuation.",when:"now",whenLabel:"Do Now",link:"https://www.moneysmart.sg/travel-insurance",linkLabel:"Compare Insurance"},
+{id:"p8",icon:"🌐",title:"Purchase China eSIM",desc:"You have eSIM (non-China) which will work for data but roaming rates may apply. A local China eSIM gives better speeds and lower cost. Airalo or Klook. Note: with VPN on your regular eSIM will work fine for most purposes.",when:"soon",whenLabel:"2–4 Weeks Before",link:"https://www.airalo.com/china-esim",linkLabel:"China eSIM Options"},
+{id:"p9",icon:"🚄",title:"Book Hangzhou HSR tickets",desc:"Book on Trip.com (English interface) using your passport details. Select morning train from Hongqiao to Hangzhou East for Sun 6 Dec. G-trains run frequently — aim for 08:00–09:00 departure.",when:"soon",whenLabel:"2–4 Weeks Before",link:"https://www.trip.com/trains/",linkLabel:"Trip.com Rail Tickets"},
+{id:"p10",icon:"📍",title:"Download offline maps — Apple Maps or Baidu Maps",desc:"Google Maps has limited function in China even with VPN. Apple Maps works reasonably well in China without VPN. Download Shanghai and Hangzhou offline areas. Baidu Maps is most accurate but Chinese-only.",when:"pre",whenLabel:"Before Departure",link:null,linkLabel:null},
+{id:"p11",icon:"💴",title:"Get some RMB cash before departure or on arrival",desc:"While WeChat/Alipay cover most things, you need cash for: Didi (sometimes), small street vendors, Yu Garden entry, some temple donations. Change at Changi airport or withdraw at PVG ATM on arrival. Budget ¥1,500–2,000 for the group.",when:"pre",whenLabel:"Before or On Arrival",link:null,linkLabel:null}
+];
+
+const MUST_VISIT=[
+{icon:"🌃",name:"The Bund (外滩)",cat:"Icon",why:"The defining Shanghai image — 1.8km of colonial-era architecture facing the futuristic Pudong skyline across the Huangpu River. Non-negotiable. Best at golden hour and after dark.",status:"covered",dayLabel:"Day 1 · Fri 4 Dec — sunset into night",tip:"Go back in morning light on Day 5 — completely different look"},
+{icon:"🏙️",name:"Shanghai Tower Observation Deck",cat:"Viewpoint",why:"Tallest building in China (632m). Floor 118 observation deck at 546m — the highest in the world. On clear days you see the entire city. The Pudong skyline trio (Shanghai Tower, SWFC, Jin Mao) is an architectural landmark.",status:"covered",dayLabel:"Day 4 · Mon 7 Dec — morning slot",tip:"Pre-book at sspct.com to skip queues"},
+{icon:"🌳",name:"French Concession",cat:"Neighbourhood",why:"The most charming neighbourhood in Shanghai — plane-tree avenues, art deco villas, boutique cafés, indie bookshops. Wukang Mansion is the most photographed building. A completely different energy from modern Shanghai.",status:"covered",dayLabel:"Day 2 · Sat 5 Dec",tip:null},
+{icon:"🎨",name:"Tianzifang (田子坊)",cat:"Neighbourhood",why:"Preserved shikumen lane architecture converted into an artsy, craft-shop labyrinth. More genuine and less corporate than Xintiandi. Good for gifts, photography, and street food browsing.",status:"covered",dayLabel:"Day 2 · Sat 5 Dec",tip:"Go before 13:00 on Saturday — gets very crowded after"},
+{icon:"🏯",name:"Yu Garden (豫园)",cat:"Garden",why:"A classical Ming dynasty garden built 1559 — one of the finest surviving classical Chinese gardens. Pavilions, rockeries, ponds, moon gates. Surrounded by the atmospheric Yuyuan Bazaar.",status:"covered",dayLabel:"Day 2 · Sat 5 Dec",tip:null},
+{icon:"🚶",name:"East Nanjing Road (南京东路)",cat:"Street",why:"One of the world's busiest pedestrian streets. 1.2km from People's Square to The Bund. In December, Christmas lighting here is spectacular. Good orientation walk on arrival day.",status:"covered",dayLabel:"Day 1 · Fri 4 Dec — arrival walk",tip:null},
+{icon:"🏙️",name:"Xintiandi",cat:"Neighbourhood",why:"Preserved 1920s shikumen architecture in an upscale dining and lifestyle complex. Beautiful to walk, historically significant (CCP founding site nearby), good for evening photos.",status:"covered",dayLabel:"Day 2 · Sat 5 Dec — evening",tip:null},
+{icon:"🌊",name:"Lujiazui Riverfront — Pudong",cat:"Viewpoint",why:"The Pudong-side waterfront gives you the reverse Bund view — all the colonial facades across the river. This is the classic Shanghai postcard shot that appears in every travel magazine.",status:"covered",dayLabel:"Day 4 · Mon 7 Dec",tip:"Better for photography than the Bund side itself"},
+{icon:"🏞️",name:"West Lake, Hangzhou (西湖)",cat:"Nature",why:"UNESCO World Heritage landscape — one of China's most celebrated. Su Causeway walk, Broken Bridge, Leifeng Pagoda. Misty and atmospheric in December with far fewer crowds than peak season.",status:"covered",dayLabel:"Day 3 · Sun 6 Dec — Hangzhou day trip",tip:null},
+{icon:"🍵",name:"Longjing Tea Village (龙井村)",cat:"Cultural",why:"China's most famous tea-growing terraces above Hangzhou. Off-season in December but still beautiful. Tea house tasting of aged Longjing is a genuine experience.",status:"covered",dayLabel:"Day 3 · Sun 6 Dec — Hangzhou",tip:null},
+{icon:"🤖",name:"Gundam Base Shanghai",cat:"Experience",why:"Bandai Spirits' flagship Gunpla store — largest selection of Gundam model kits outside Japan, with a large Gundam display. Essential for your son.",status:"covered",dayLabel:"Day 4 · Mon 7 Dec",tip:"⚠️ Verify exact location before going — check gundambase.net"},
+{icon:"🥟",name:"Shengjianbao at Yang's Dumplings",cat:"Food",why:"Pan-fried pork buns with a crispy bottom and juicy broth inside. The single most important Shanghai street food. Multiple locations on Nanjing Road. Must eat at least twice.",status:"covered",dayLabel:"Multiple days — Nanjing Road locations",tip:null},
+{icon:"🏮",name:"Yuyuan Bazaar + Nanxiang XLB",cat:"Food + Atmosphere",why:"The old-style commercial quarter around Yu Garden. Nanxiang Steamed Bun Restaurant (since 1900) serves the original xiaolongbao. Queue for upper floors, not the ground-floor counter.",status:"covered",dayLabel:"Day 2 · Sat 5 Dec",tip:null},
+{icon:"🗼",name:"Shanghai Museum (上海博物馆)",cat:"Museum",why:"World-class free museum on People's Square — ancient Chinese bronzes, ceramics, calligraphy, furniture. One of the best in China. Literally next to your hotel area.",status:"gap",dayLabel:"Not in itinerary",tip:"Free entry — 2 hours minimum. Possible on Day 5 morning before airport"},
+{icon:"🌆",name:"Shikumen Open House Museum",cat:"Museum",why:"Small but excellent museum inside Xintiandi showing a fully restored 1920s shikumen house interior. ¥50 entry. Gives real context for what life in old Shanghai looked like.",status:"gap",dayLabel:"Not in itinerary",tip:"Inside Xintiandi — add to Day 2 evening block, 45 min"},
+{icon:"🚤",name:"Huangpu River Night Cruise",cat:"Experience",why:"A boat cruise on the Huangpu River at night gives the most dramatic view of both The Bund and the Pudong skyline simultaneously. Usually 1-hour cruises from the Bund piers.",status:"gap",dayLabel:"Not in itinerary",tip:"Could replace the Day 1 dinner walk along The Bund — piers at Bund Tourist Tunnel"}
+];
+
+const TIPS_DATA=[
+{icon:"🔒",title:"VPN First",text:"Install and test your VPN in Singapore before flying. Google Maps, WhatsApp, Instagram, and Gmail all need it in China. Cannot download VPN once inside."},
+{icon:"💳",title:"WeChat Pay + Alipay",text:"Cash is almost useless in modern Shanghai. Even street vendors prefer QR codes. Have both apps loaded and tested before landing."},
+{icon:"🌡️",title:"December Cold",text:"Shanghai in December: 5–12°C with wind chill off the river. Hangzhou is slightly colder. Bring a proper coat, not just a jacket. The Bund riverfront at night is bitter."},
+{icon:"🚇",title:"Metro is excellent",text:"Shanghai Metro is clean, fast, cheap and has English signage. Line 2 covers most of your itinerary. Buy a transportation card (¥20 deposit) for tap-in/out."},
+{icon:"🚗",title:"Didi over taxis",text:"Always use Didi — fixed price, GPS tracked, driver can't overcharge. Regular taxis in Shanghai can be difficult if you don't speak Mandarin."},
+{icon:"🍜",title:"Breakfast culture",text:"Shanghai breakfast is a serious affair. Shengjianbao, ci fan tuan, and scallion noodles from a local hole-in-the-wall cost ¥10–20 and are genuinely excellent."},
+{icon:"📸",title:"Wukang Mansion",text:"Most photographed building in Shanghai — Wukang Road intersection. Go before 10am on weekdays. Weekends attract crowds of selfie-takers."},
+{icon:"🧳",title:"Luggage note",text:"Unlike Tokyo, there's no major vintage shopping day — but Gundam Base may require luggage space. Pack a foldable bag in case your son goes deep on Gunpla."},
+{icon:"🗣️",title:"Language",text:"Less English than you'd expect outside major hotels and malls. Google Translate camera mode + Pleco covers menus. Learning 谢谢 (xie xie, thank you) goes a long way."},
+{icon:"🎄",title:"December timing",text:"December is a good time to visit: Christmas lights on Nanjing Road and The Bund are spectacular, West Lake in Hangzhou is atmospheric without summer crowds, and indoor attractions are less queued."}
+];
+
+// ══════════════ STATE ══════════════
+let state={edits:{},notes:{},customBlocks:{},bookings:null,pretrip:null,bookingDone:{},pretripDone:{}};
+let activeDay=0,saveTimer=null,expandedBlocks=new Set();
+
+function syncBadge(s){const e=document.getElementById('syncBadge'),l=document.getElementById('syncLabel');e.className='sync-badge '+s;l.textContent=s==='saving'?'Saving…':s==='error'?'Offline':'Synced';}
+async function loadState(){try{const r=await fetch('api_state');if(!r.ok)throw 0;const d=await r.json();state.edits=d.edits||{};state.notes=d.notes||{};state.customBlocks=d.customBlocks||{};state.bookings=d.bookings||null;state.pretrip=d.pretrip||null;state.bookingDone=d.bookingDone||{};state.pretripDone=d.pretripDone||{};syncBadge('idle');}catch{syncBadge('error');}}
+async function saveState(){syncBadge('saving');try{const r=await fetch('api_state',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(state)});if(!r.ok)throw 0;syncBadge('idle');}catch{syncBadge('error');}}
+function scheduleSave(){clearTimeout(saveTimer);saveTimer=setTimeout(saveState,500);}
+function getBookings(){return state.bookings||DEFAULT_BOOKINGS;}
+function getPretrip(){return state.pretrip||DEFAULT_PRETRIP;}
+function getCB(d){return state.customBlocks[String(d)]||[];}
+function bKey(d,b){return d+'_'+b;}
+function getBlock(d,b){const k=bKey(d,b),base=DAYS[d].blocks[b],e=state.edits[k]||{};return{time:e.time!==undefined?e.time:base.time,icon:e.icon!==undefined?e.icon:base.icon,title:e.title!==undefined?e.title:base.title,detail:e.detail!==undefined?e.detail:base.detail,route:e.route!==undefined?e.route:base.route,tag:e.tag!==undefined?e.tag:base.tag};}
+function tc(c){return({'#2E7D32':'#A5D6A7','#1565C0':'#90CAF9','#6A1B9A':'#CE93D8','#D35400':'#FFCC80','#E63946':'#FFCDD2'})[c]||'#fff';}
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>');}
+function uid(){return'u'+Date.now()+Math.random().toString(36).slice(2,6);}
+function firstLine(s){if(!s)return'';const clean=s.replace(/<br>/g,' ');const l=clean.split('\n')[0];return l.length>70?l.slice(0,68)+'…':l;}
+
+function renderAll(){renderDayNav();renderDayBanner();renderBlocks();renderSectionMeta();}
+
+function renderDayNav(){document.getElementById('dayNav').innerHTML=DAYS.map((d,i)=>`<button class="day-btn${i===activeDay?' active':''}" onclick="switchDay(${i})" style="${i===activeDay?'background:'+d.color+';border-color:'+d.color:''}"><div class="d-emoji">${d.emoji}</div><div class="d-label">${d.label}</div><div class="d-date">${d.date.split(' ').slice(0,2).join(' ')}</div></button>`).join('');}
+
+function renderDayBanner(){const d=DAYS[activeDay],cc=getCB(activeDay).length,total=d.blocks.length+cc;document.getElementById('dayBannerWrap').innerHTML=`<div class="day-banner" style="background:linear-gradient(135deg,${d.color}cc,${d.accent}aa);box-shadow:0 6px 24px ${d.color}44"><div class="big-emoji">${d.emoji}</div><div class="banner-body"><div class="day-sub">${d.label} · ${d.date}</div><div class="day-title">${d.theme}</div><div class="banner-meta">${total} blocks${cc?' · '+cc+' added':''}${expandedBlocks.size?' · '+expandedBlocks.size+' expanded':''}</div><div class="banner-acts"><button class="banner-btn" onclick="expandAll()">↕ Expand All</button><button class="banner-btn" onclick="collapseAll()">↕ Collapse All</button><button class="banner-btn primary" onclick="openBlockModal('new',${activeDay},null)">＋ Add Block</button></div></div></div>`;}
+
+function renderBlocks(){const d=DAYS[activeDay];const dH=d.blocks.map((_,bi)=>{const key=bKey(activeDay,bi);return blockHtml(key,getBlock(activeDay,bi),d,BLOCK_EATS[key]||[],`openBlockModal('default',${activeDay},${bi})`,null,false);}).join('');const cH=getCB(activeDay).map(cb=>{const key='custom_'+cb.id;return blockHtml(key,cb,d,[],`openBlockModal('custom',${activeDay},'${cb.id}')`,`delCB(${activeDay},'${cb.id}')`,true);}).join('');document.getElementById('blocksContainer').innerHTML=dH+cH;}
+
+function blockHtml(key,blk,d,eats,editFn,delFn,isCustom){
+const isOpen=expandedBlocks.has(key),sk=key.replace(/'/g,"\\'"),note=state.notes[key]||'';
+const eatHtml=eats.length?`<div class="eats-divider">🍽 recommended eats</div>${eats.map(e=>`<div class="eat-inline"><div class="eat-inline-icon">${e.icon}</div><div class="eat-inline-body"><div class="eat-inline-name">${esc(e.name)}</div><div class="eat-inline-type">${esc(e.type)}</div><div class="eat-inline-why">${esc(e.why)}</div>${e.tag?`<div class="eat-tag">${esc(e.tag)}</div>`:''}</div></div>`).join('')}`:'';
+const noteHtml=note?`<div class="note-display" onclick="editNote('${sk}')">📝 ${esc(note)}</div>`:`<button class="note-empty-btn" onclick="editNote('${sk}')">+ Add a note…</button>`;
+return`<div class="block${isCustom?' custom-block':''}${isOpen?' open':''}" id="bl_${key}" style="border-left-color:${d.color}"><div class="block-head" onclick="toggleBlock('${sk}')"><div class="b-icon" style="background:${d.iconBg}">${blk.icon||'📌'}</div><div class="b-summary"><div class="b-title">${esc(blk.title)}</div>${!isOpen?`<div class="b-sub">${esc(firstLine(blk.detail))}</div>`:''}</div><div class="b-right"><div class="time-badge" style="background:${d.color}22;color:${d.color};border:1px solid ${d.color}44">${esc(blk.time)}</div><button class="bact-btn bact-edit" onclick="event.stopPropagation();${editFn}">✏️</button>${delFn?`<button class="bact-btn bact-del" onclick="event.stopPropagation();${delFn}">🗑️</button>`:''}<span class="b-chevron">▼</span></div></div><div class="block-body"><div class="b-detail">${esc(blk.detail)}</div>${blk.route?`<div class="route-box">🗺️ ${esc(blk.route)}</div>`:''}${blk.tag?`<div class="tag-box" style="background:${d.color}15;color:${tc(d.color)};border-color:${d.color}38">${esc(blk.tag)}</div>`:''} ${eatHtml}<div class="note-area" id="na_${key}">${noteHtml}</div></div></div>`;}
+
+function toggleBlock(key){if(expandedBlocks.has(key))expandedBlocks.delete(key);else expandedBlocks.add(key);renderDayBanner();renderBlocks();}
+function expandAll(){DAYS[activeDay].blocks.forEach((_,bi)=>expandedBlocks.add(bKey(activeDay,bi)));getCB(activeDay).forEach(cb=>expandedBlocks.add('custom_'+cb.id));renderDayBanner();renderBlocks();}
+function collapseAll(){expandedBlocks.clear();renderDayBanner();renderBlocks();}
+
+function toggleSection(id){
+const body=document.getElementById('secBody'+id.charAt(0).toUpperCase()+id.slice(1));
+const toggle=document.getElementById('secToggle'+id.charAt(0).toUpperCase()+id.slice(1));
+const isOpen=body.classList.contains('open');
+if(isOpen){body.classList.remove('open');toggle.classList.remove('sec-open');}
+else{body.classList.add('open');toggle.classList.add('sec-open');
+if(id==='pretrip')renderPretrip();
+else if(id==='booking')renderChecklist();
+else if(id==='mustvisit')renderMustVisit();
+else if(id==='tips')renderTips();
+else if(id==='glance')renderGlance();}
+}
+
+function renderSectionMeta(){
+const pt=getPretrip(),ptD=pt.filter(t=>state.pretripDone[t.id]).length;document.getElementById('secMetaPretrip').textContent=`${ptD} of ${pt.length} complete`;
+const bk=getBookings(),bkD=bk.filter(b=>state.bookingDone[b.id]!==undefined?state.bookingDone[b.id]:b.done).length;document.getElementById('secMetaBooking').textContent=`${bkD} of ${bk.length} confirmed`;
+}
+
+function renderChecklist(){document.getElementById('checklistContainer').innerHTML=getBookings().map((b,i)=>{const done=state.bookingDone[b.id]!==undefined?state.bookingDone[b.id]:b.done;return`<div class="check-row"><div class="check-box ${done?'done':'todo'}" onclick="toggleBookingDone('${b.id}')">${done?'✓':esc(b.icon)}</div><div class="row-text-wrap" onclick="toggleBookingDone('${b.id}')"><div class="check-text${done?' done':''}">${esc(b.text)}</div></div><div class="row-acts"><button class="row-edit-btn" onclick="openBookingModal(${i})">✏️</button><button class="row-del-btn" onclick="delBookingIdx(${i})">🗑️</button></div></div>`;}).join('');}
+
+function renderPretrip(){const wc={now:'when-now',soon:'when-soon',pre:'when-pre',day:'when-day'};document.getElementById('pretripContainer').innerHTML=getPretrip().map((t,i)=>{const done=state.pretripDone[t.id]||false;return`<div class="pretrip-row"><div class="pretrip-check ${done?'done':'todo'}" onclick="togglePretripDone('${t.id}')">${done?'✓':esc(t.icon)}</div><div class="pretrip-body"><div class="pretrip-top"><div class="pretrip-title${done?' done':''}" onclick="togglePretripDone('${t.id}')">${esc(t.title)}</div><span class="when-badge ${wc[t.when]||'when-now'}">${esc(t.whenLabel)}</span></div><div class="pretrip-desc">${esc(t.desc)}</div>${t.link?`<a class="pretrip-link" href="${esc(t.link)}" target="_blank" onclick="event.stopPropagation()">🔗 ${esc(t.linkLabel||t.link)}</a>`:''}</div><div class="row-acts" style="margin-top:2px"><button class="row-edit-btn" onclick="openPretripModal(${i});event.stopPropagation()">✏️</button><button class="row-del-btn" onclick="delPretripIdx(${i});event.stopPropagation()">🗑️</button></div></div>`;}).join('');}
+
+function renderMustVisit(){document.getElementById('mustvisitContainer').innerHTML=MUST_VISIT.map(m=>`<div class="mv-card ${m.status}"><div class="mv-icon">${m.icon}</div><div class="mv-body"><div class="mv-top"><div class="mv-name">${esc(m.name)}</div><span class="mv-cat">${esc(m.cat)}</span></div><div class="mv-why">${esc(m.why)}</div><div class="mv-status"><span class="mv-day-badge ${m.status}">${m.status==='covered'?'✅':m.status==='partial'?'🟡':'⬜'} ${esc(m.dayLabel)}</span>${m.tip?`<span class="mv-tip">💡 ${esc(m.tip)}</span>`:''}</div></div></div>`).join('');}
+
+function renderTips(){document.getElementById('tipsContainer').innerHTML=TIPS_DATA.map(t=>`<div class="tip-card"><div class="tip-emoji">${t.icon}</div><div class="tip-title">${esc(t.title)}</div><div class="tip-text">${esc(t.text)}</div></div>`).join('');}
+
+function renderGlance(){document.getElementById('glanceContainer').innerHTML=DAYS.map((d,i)=>`<div class="glance-row"><div class="glance-icon" style="background:${d.color}">${d.emoji}</div><div><div style="font-size:10px;color:rgba(255,255,255,.38);font-weight:700">${d.date}</div><div style="font-size:12px;font-weight:700">${d.theme}</div></div><button class="glance-btn" onclick="switchDay(${i})" style="border-color:${d.color}44">View →</button></div>`).join('');}
+
+function editNote(key){const areaId='na_'+key,area=document.getElementById(areaId);if(!area)return;const cur=state.notes[key]||'',sk=key.replace(/\\/g,'\\\\').replace(/'/g,"\\'");area.innerHTML=`<textarea class="note-input" placeholder="Add note…">${esc(cur).replace(/<br>/g,'\n')}</textarea><div class="note-acts"><button class="n-save" onclick="saveNote('${sk}',this)">Save</button><button class="n-cancel" onclick="cancelNote('${sk}')">Cancel</button>${cur?`<button class="n-del" onclick="deleteNote('${sk}')">Delete</button>`:''}</div>`;const ta=area.querySelector('textarea');if(ta){ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);}}
+function saveNote(key,btn){const ta=btn.closest('.note-area').querySelector('textarea');if(ta){const v=ta.value.trim();if(v)state.notes[key]=v;else delete state.notes[key];scheduleSave();}refreshNoteArea(key);}
+function cancelNote(key){refreshNoteArea(key);}
+function deleteNote(key){delete state.notes[key];scheduleSave();refreshNoteArea(key);}
+function refreshNoteArea(key){const area=document.getElementById('na_'+key);if(!area)return;const note=state.notes[key]||'',sk=key.replace(/'/g,"\\'");area.innerHTML=note?`<div class="note-display" onclick="editNote('${sk}')">📝 ${esc(note)}</div>`:`<button class="note-empty-btn" onclick="editNote('${sk}')">+ Add a note…</button>`;}
+
+let eb=null;
+function openBlockModal(type,dayIdx,ref){eb={type,dayIndex:dayIdx,ref};const isNew=type==='new',isCustom=type==='custom';document.getElementById('blockModalTitle').textContent=isNew?'➕ Add Block':'✏️ Edit Block';document.getElementById('blockDelBtn').style.display=isCustom?'inline-flex':'none';document.getElementById('blockResetBtn').style.display=type==='default'?'inline-flex':'none';let blk={icon:'📌',time:'',title:'',detail:'',route:'',tag:''};if(type==='default')blk=getBlock(dayIdx,ref);else if(isCustom)blk=getCB(dayIdx).find(b=>b.id===ref)||blk;document.getElementById('bm_icon').value=blk.icon||'📌';document.getElementById('bm_time').value=blk.time||'';document.getElementById('bm_title').value=blk.title||'';document.getElementById('bm_detail').value=(blk.detail||'').replace(/<br>/g,'\n');document.getElementById('bm_route').value=blk.route||'';document.getElementById('bm_tag').value=blk.tag||'';openModal('blockModal');}
+function saveBlock(){const icon=document.getElementById('bm_icon').value.trim()||'📌',time=document.getElementById('bm_time').value.trim(),title=document.getElementById('bm_title').value.trim(),detail=document.getElementById('bm_detail').value.trim(),route=document.getElementById('bm_route').value.trim(),tag=document.getElementById('bm_tag').value.trim();if(!title){alert('Please enter a title.');return;}const{type,dayIndex,ref}=eb;if(type==='new'){const dk=String(dayIndex);if(!state.customBlocks[dk])state.customBlocks[dk]=[];state.customBlocks[dk].push({id:uid(),icon,time,title,detail,route:route||null,tag:tag||null});}else if(type==='default'){const key=bKey(dayIndex,ref),base=DAYS[dayIndex].blocks[ref],s={};if(icon!==base.icon)s.icon=icon;if(time!==base.time)s.time=time;if(title!==base.title)s.title=title;if(detail!==base.detail)s.detail=detail;if(route!==(base.route||''))s.route=route||null;if(tag!==(base.tag||''))s.tag=tag||null;if(Object.keys(s).length)state.edits[key]={...(state.edits[key]||{}),...s};}else{const dk=String(dayIndex),arr=getCB(dayIndex),idx=arr.findIndex(b=>b.id===ref);if(idx>-1)arr[idx]={...arr[idx],icon,time,title,detail,route:route||null,tag:tag||null};state.customBlocks[dk]=arr;}closeModal('blockModal');renderDayBanner();renderBlocks();scheduleSave();}
+function resetBlock(){if(!eb||eb.type!=='default')return;if(!confirm('Reset to original?'))return;delete state.edits[bKey(eb.dayIndex,eb.ref)];closeModal('blockModal');renderBlocks();scheduleSave();}
+function deleteEditingBlock(){if(!eb||eb.type!=='custom')return;if(!confirm('Delete this block?'))return;delCB(eb.dayIndex,eb.ref);closeModal('blockModal');}
+function delCB(dayIdx,id){const dk=String(dayIdx);state.customBlocks[dk]=(state.customBlocks[dk]||[]).filter(b=>b.id!==id);delete state.notes['custom_'+id];renderDayBanner();renderBlocks();scheduleSave();}
+
+let eBIdx=null;
+function openBookingModal(idx){eBIdx=idx;const isNew=idx===null;document.getElementById('bookingModalTitle').textContent=isNew?'➕ Add Booking':'✏️ Edit Booking';document.getElementById('bookingDelBtn').style.display=isNew?'none':'inline-flex';if(isNew){document.getElementById('book_icon').value='📌';document.getElementById('book_text').value='';document.getElementById('book_done').value='false';}else{const b=getBookings()[idx];document.getElementById('book_icon').value=b.icon||'📌';document.getElementById('book_text').value=b.text||'';const d=state.bookingDone[b.id]!==undefined?state.bookingDone[b.id]:b.done;document.getElementById('book_done').value=d?'true':'false';}openModal('bookingModal');}
+function saveBooking(){const icon=document.getElementById('book_icon').value.trim()||'📌',text=document.getElementById('book_text').value.trim(),done=document.getElementById('book_done').value==='true';if(!text){alert('Enter a description.');return;}const list=JSON.parse(JSON.stringify(getBookings()));if(eBIdx===null){const id=uid();list.push({id,icon,text,done});state.bookingDone[id]=done;}else{const b=list[eBIdx];b.icon=icon;b.text=text;state.bookingDone[b.id]=done;}state.bookings=list;closeModal('bookingModal');renderChecklist();renderSectionMeta();scheduleSave();}
+function deleteBooking(){if(eBIdx===null)return;if(!confirm('Delete?'))return;const list=JSON.parse(JSON.stringify(getBookings()));const[r]=list.splice(eBIdx,1);delete state.bookingDone[r.id];state.bookings=list;closeModal('bookingModal');renderChecklist();renderSectionMeta();scheduleSave();}
+function delBookingIdx(i){if(!confirm('Delete?'))return;const list=JSON.parse(JSON.stringify(getBookings()));const[r]=list.splice(i,1);delete state.bookingDone[r.id];state.bookings=list;renderChecklist();renderSectionMeta();scheduleSave();}
+function toggleBookingDone(id){const base=getBookings().find(b=>b.id===id);state.bookingDone[id]=!(state.bookingDone[id]!==undefined?state.bookingDone[id]:(base?base.done:false));scheduleSave();renderChecklist();renderSectionMeta();}
+
+let ePIdx=null;
+const WL={now:'Do NOW — Before Departure',soon:'2–4 Weeks Before',pre:'Before Departure',day:'On Arrival'};
+function openPretripModal(idx){ePIdx=idx;const isNew=idx===null;document.getElementById('pretripModalTitle').textContent=isNew?'➕ Add Pre-Trip Task':'✏️ Edit Task';document.getElementById('pretripDelBtn').style.display=isNew?'none':'inline-flex';if(isNew){document.getElementById('pt_icon').value='📌';document.getElementById('pt_title').value='';document.getElementById('pt_desc').value='';document.getElementById('pt_when').value='soon';document.getElementById('pt_link').value='';document.getElementById('pt_linkLabel').value='';}else{const t=getPretrip()[idx];document.getElementById('pt_icon').value=t.icon||'📌';document.getElementById('pt_title').value=t.title||'';document.getElementById('pt_desc').value=t.desc||'';document.getElementById('pt_when').value=t.when||'soon';document.getElementById('pt_link').value=t.link||'';document.getElementById('pt_linkLabel').value=t.linkLabel||'';}openModal('pretripModal');}
+function savePretrip(){const icon=document.getElementById('pt_icon').value.trim()||'📌',title=document.getElementById('pt_title').value.trim(),desc=document.getElementById('pt_desc').value.trim(),when=document.getElementById('pt_when').value,link=document.getElementById('pt_link').value.trim(),linkLabel=document.getElementById('pt_linkLabel').value.trim();if(!title){alert('Enter a title.');return;}const list=JSON.parse(JSON.stringify(getPretrip())),whenLabel=WL[when]||when;if(ePIdx===null)list.push({id:uid(),icon,title,desc,when,whenLabel,link,linkLabel});else Object.assign(list[ePIdx],{icon,title,desc,when,whenLabel,link,linkLabel});state.pretrip=list;closeModal('pretripModal');renderPretrip();renderSectionMeta();scheduleSave();}
+function deletePretrip(){if(ePIdx===null)return;if(!confirm('Delete?'))return;const list=JSON.parse(JSON.stringify(getPretrip()));const[r]=list.splice(ePIdx,1);delete state.pretripDone[r.id];state.pretrip=list;closeModal('pretripModal');renderPretrip();renderSectionMeta();scheduleSave();}
+function delPretripIdx(i){if(!confirm('Delete?'))return;const list=JSON.parse(JSON.stringify(getPretrip()));const[r]=list.splice(i,1);delete state.pretripDone[r.id];state.pretrip=list;renderPretrip();renderSectionMeta();scheduleSave();}
+function togglePretripDone(id){state.pretripDone[id]=!(state.pretripDone[id]||false);scheduleSave();renderPretrip();renderSectionMeta();}
+
+function closeModal(id,e){if(!e||e.target===document.getElementById(id))document.getElementById(id).classList.remove('open');}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function switchDay(i){activeDay=i;expandedBlocks.clear();renderDayNav();renderDayBanner();renderBlocks();window.scrollTo({top:0,behavior:'smooth'});}
+
+async function initApp(){await loadState();document.getElementById('loadingScreen').style.display='none';document.getElementById('app').style.display='block';renderAll();}
+initApp();
+</script>
+</body>
+</html>

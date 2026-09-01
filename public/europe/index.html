@@ -245,11 +245,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(135d
 <script>
 // ═══════════════════ CITIES & DAYS ═══════════════════
 const CITIES=[
-{id:'paris',name:'Paris',emoji:'🗼',color:'#8B1A2C',days:[0,1,2,3]},
-{id:'amsterdam',name:'Amsterdam',emoji:'🌷',color:'#CC5500',days:[4,5,6]},
-{id:'liverpool',name:'Liverpool',emoji:'⚽',color:'#C8102E',days:[7,8,9,10,11]},
-{id:'london',name:'London',emoji:'🎡',color:'#1A3A6B',days:[12,13]}
+{id:'paris',    name:'Paris',     emoji:'🗼',color:'#8B1A2C',days:[0,1,2,3]},
+{id:'amsterdam',name:'Amsterdam', emoji:'🌷',color:'#CC5500',days:[3,4,5,6]},
+{id:'liverpool',name:'Liverpool', emoji:'⚽',color:'#C8102E',days:[6,7,8,9,10,11]},
+{id:'london',   name:'London',    emoji:'🎡',color:'#1A3A6B',days:[11,12,13]}
 ];
+// Shared travel days — appear in two city tabs; edits sync automatically via day index
+const SHARED_DAYS={3:['paris','amsterdam'],6:['amsterdam','liverpool'],11:['liverpool','london']};
 
 const DAYS=[
 // ─── PARIS ───
@@ -414,7 +416,7 @@ const BOOKINGS=[
 {id:'bk3',icon:'🚄',text:'Paris → Amsterdam — 24 Jan 15:22 GdN → ~18:42 AMS Centraal',done:true},
 {id:'bk4',icon:'🚄',text:'Eurostar Amsterdam → London — 27 Jan 06:40 → 09:57',done:true},
 {id:'bk5',icon:'✈️',text:'EasyJet — 28 Jan 21:30 AMS → 21:55 LPL (leaving as-is)',done:true},
-{id:'bk6',icon:'🏨',text:'Hôtel Hélios Opéra, Paris — 21–24 Jan (change pending hotel confirmation)',done:false},
+{id:'bk6',icon:'🏨',text:'Hôtel Hélios Opéra, Paris — 21–24 Jan ✅',done:true},
 {id:'bk7',icon:'🏨',text:'Park Centraal Amsterdam — 24–27 Jan (date shift TBD)',done:false},
 {id:'bk8',icon:'🏨',text:'Delta Hotels Liverpool — 27 Jan–1 Feb (5 nights)',done:true},
 {id:'bk9',icon:'🏨',text:'citizenM Victoria London — 1–3 Feb (2 nights)',done:true},
@@ -470,13 +472,15 @@ function renderCityNav(){
 
 function renderDayNav(){
   const city=CITIES[activeCity];
-  document.getElementById('dayNav').innerHTML=city.days.map((di,i)=>{
+  document.getElementById('dayNav').innerHTML=city.days.map((di)=>{
     const d=DAYS[di];
     const parts=d.date.split(' ');
     const isActive=di===activeDay;
+    const isShared=!!SHARED_DAYS[di];
+    const sharedStyle=isShared&&!isActive?'border-style:dashed;border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.08)':'';
     return`<button class="day-btn${isActive?' active':''}" onclick="switchDay(${di})"
-      style="${isActive?'background:'+d.color+';border-color:'+d.color:''}">
-      <span class="d-num">${d.label}</span>
+      style="${isActive?'background:'+d.color+';border-color:'+d.color:sharedStyle}">
+      <span class="d-num">${d.label}${isShared?' ✈️':''}</span>
       <span class="d-date">${parts[0]} ${parts[1]}</span>
     </button>`;
   }).join('');
@@ -485,6 +489,11 @@ function renderDayNav(){
 function renderDayBanner(){
   const d=DAYS[activeDay];
   const cc=getCB(activeDay).length;
+  const sharedInfo=SHARED_DAYS[activeDay];
+  const otherCity=sharedInfo?CITIES.find(c=>c.id===sharedInfo.find(id=>id!==CITIES[activeCity].id)):null;
+  const sharedBg=otherCity
+    ?`linear-gradient(135deg,${d.color}cc 0%,${otherCity.color}aa 100%)`
+    :`linear-gradient(135deg,${d.color}cc,${d.accent}aa)`;
   const total=d.blocks.length+cc;
   document.getElementById('dayBannerWrap').innerHTML=`
     <div class="day-banner" style="background:linear-gradient(135deg,${d.color}cc,${d.accent}aa);box-shadow:0 6px 24px ${d.color}44">
@@ -492,7 +501,7 @@ function renderDayBanner(){
       <div class="banner-body">
         <div class="day-sub">${d.label} · ${d.date}</div>
         <div class="day-title">${d.theme}</div>
-        <div class="banner-meta">${total} blocks${cc?' · '+cc+' added':''}${expandedBlocks.size?' · '+expandedBlocks.size+' expanded':''}</div>
+        <div class="banner-meta">${total} blocks${cc?' · '+cc+' added':''}${expandedBlocks.size?' · '+expandedBlocks.size+' expanded':''}${sharedInfo?' · ✈️ shared travel day':''}</div>
         <div class="banner-acts">
           <button class="banner-btn" onclick="expandAll()">↕ Expand All</button>
           <button class="banner-btn" onclick="collapseAll()">↕ Collapse All</button>

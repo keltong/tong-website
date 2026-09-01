@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Europe 2027 ✈️</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(135deg,#0a0a1a,#1a0a14,#0a0a1a);min-height:100vh;color:#fff;padding-bottom:60px}
+/* Header */
+.site-header{background:rgba(255,255,255,.05);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.1);padding:18px 16px 14px;text-align:center;position:relative}
+.title{font-size:28px;font-weight:900;background:linear-gradient(135deg,#f9ca24,#e55039,#6c63ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.meta-row{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin-top:8px}
+.meta-pill{font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.7)}
+.status-row{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin-top:7px}
+.status-pill{font-size:10.5px;padding:3px 11px;border-radius:20px;font-weight:700}
+.sp-done{background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff}
+.sp-warn{background:linear-gradient(135deg,#f7971e,#ffd200);color:#1a1a00}
+.sync-badge{position:absolute;top:12px;right:12px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:14px;display:flex;align-items:center;gap:4px}
+.sync-badge.idle{background:rgba(56,239,125,.12);color:#38ef7d;border:1px solid rgba(56,239,125,.25)}
+.sync-badge.saving{background:rgba(255,214,0,.12);color:#ffd200;border:1px solid rgba(255,214,0,.25)}
+.sync-badge.error{background:rgba(255,80,80,.12);color:#ff8080;border:1px solid rgba(255,80,80,.25)}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+.sync-badge.saving .sync-dot{animation:pulse .8s infinite}
+/* City nav */
+.city-nav{display:flex;gap:0;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08)}
+.city-btn{flex:1;padding:10px 4px;cursor:pointer;text-align:center;border:none;background:none;color:rgba(255,255,255,.45);font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;transition:all .2s;border-bottom:2px solid transparent}
+.city-btn.active{color:#fff;border-bottom-color:var(--city-color,#fff)}
+.city-btn .city-emoji{font-size:18px;display:block;margin-bottom:2px}
+/* Day nav */
+.day-nav{display:flex;gap:7px;overflow-x:auto;padding:12px 14px 10px;scrollbar-width:none}
+.day-nav::-webkit-scrollbar{display:none}
+.day-btn{flex-shrink:0;border:2px solid rgba(255,255,255,.12);border-radius:12px;padding:7px 11px;cursor:pointer;text-align:center;min-width:68px;background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);transition:all .2s;font-size:0}
+.day-btn.active{color:#fff}
+.day-btn .d-num{font-size:11px;font-weight:800;display:block}
+.day-btn .d-date{font-size:9px;opacity:.7;display:block;margin-top:1px}
+/* Banner */
+.day-banner-wrap{margin:0 14px 2px}
+.day-banner{border-radius:16px;padding:12px 15px;display:flex;align-items:flex-start;gap:11px}
+.big-emoji{font-size:34px;flex-shrink:0;margin-top:2px}
+.banner-body{flex:1}
+.day-sub{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:.75}
+.day-title{font-size:17px;font-weight:900;margin-top:2px}
+.banner-meta{font-size:11px;opacity:.55;margin-top:2px}
+.banner-acts{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap}
+.banner-btn{font-size:11px;font-weight:700;padding:4px 11px;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.07);color:rgba(255,255,255,.8);cursor:pointer}
+.banner-btn.primary{border-style:dashed}
+/* Blocks */
+.blocks{display:flex;flex-direction:column;gap:7px;padding:4px 14px}
+.block{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);border-radius:13px;border-left-width:3px;border-left-style:solid;overflow:hidden}
+.block.custom-block{border-top-style:dashed;border-right-style:dashed;border-bottom-style:dashed}
+.block-head{display:flex;align-items:center;gap:9px;padding:10px 12px;cursor:pointer;user-select:none}
+.block-head:hover{background:rgba(255,255,255,.025)}
+.b-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.b-summary{flex:1;min-width:0}
+.b-title{font-size:13px;font-weight:800;color:#fff;line-height:1.3}
+.b-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.b-right{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.time-badge{font-size:10px;font-weight:700;padding:2px 6px;border-radius:7px;white-space:nowrap}
+.b-chevron{font-size:10px;color:rgba(255,255,255,.3);transition:transform .2s;width:16px;text-align:center}
+.block.open .b-chevron{transform:rotate(180deg)}
+.bact-btn{width:22px;height:22px;border-radius:5px;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:11px}
+.bact-edit{background:rgba(99,179,237,.1);color:rgba(144,202,249,.6)}
+.bact-edit:hover{background:rgba(99,179,237,.25);color:#90caf9}
+.bact-del{background:rgba(255,80,80,.08);color:rgba(255,128,128,.5)}
+.bact-del:hover{background:rgba(255,80,80,.2);color:#ff8080}
+.block-body{display:none;padding:0 12px 12px}
+.block.open .block-body{display:block}
+.b-detail{font-size:12px;color:rgba(255,255,255,.7);line-height:1.65;margin-bottom:6px}
+.route-box{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:7px;padding:5px 9px;font-size:11px;color:rgba(255,255,255,.52);display:flex;gap:5px;margin-bottom:6px}
+.tag-box{border-radius:7px;padding:3px 9px;font-size:11px;font-weight:700;border:1px solid;margin-bottom:6px;display:inline-block}
+/* Eats */
+.eats-divider{font-size:9.5px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.28);margin:9px 0 6px;display:flex;align-items:center;gap:6px}
+.eats-divider::before,.eats-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.07)}
+.eat-inline{display:flex;gap:8px;padding:7px 9px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:9px;margin-bottom:5px}
+.eat-inline-icon{font-size:17px;flex-shrink:0;margin-top:1px}
+.eat-inline-body{flex:1;min-width:0}
+.eat-inline-name{font-size:12px;font-weight:800;color:#fff}
+.eat-inline-type{font-size:10px;color:rgba(255,255,255,.4);margin-top:1px}
+.eat-inline-why{font-size:11px;color:rgba(255,255,255,.58);margin-top:3px;line-height:1.5}
+.eat-tag{font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:6px;background:rgba(249,202,36,.14);color:#f9ca24;border:1px solid rgba(249,202,36,.25);margin-top:3px;display:inline-block}
+/* Note */
+.note-area{margin-top:6px}
+.note-display{background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.2);border-radius:7px;padding:5px 9px;font-size:11px;color:rgba(255,215,0,.85);line-height:1.5;cursor:pointer;white-space:pre-wrap;word-break:break-word}
+.note-display:hover{background:rgba(255,215,0,.11)}
+.note-empty-btn{font-size:11px;color:rgba(255,255,255,.28);background:none;border:1px dashed rgba(255,255,255,.16);border-radius:7px;padding:4px 9px;cursor:pointer;width:100%;text-align:left}
+.note-empty-btn:hover{color:rgba(255,255,255,.5)}
+.note-input{width:100%;background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.35);border-radius:7px;padding:5px 9px;font-size:11px;color:#fff;resize:vertical;font-family:inherit;line-height:1.5;min-height:52px}
+.note-input:focus{outline:none;border-color:rgba(255,215,0,.6)}
+.note-acts{display:flex;gap:5px;margin-top:3px}
+.note-acts button{font-size:10.5px;padding:3px 9px;border-radius:5px;border:none;cursor:pointer;font-weight:700}
+.n-save{background:#38ef7d;color:#0f2d20}
+.n-cancel{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6)}
+.n-del{background:rgba(255,80,80,.12);color:#ff8080}
+/* Sections */
+.section{padding:5px 14px}
+.section-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:9px 4px;user-select:none;border-bottom:1px solid rgba(255,255,255,.06)}
+.sec-title{font-size:14px;font-weight:900}
+.sec-meta{font-size:11px;color:rgba(255,255,255,.36);font-weight:600;margin-top:1px}
+.sec-right{display:flex;align-items:center;gap:7px}
+.section-add-btn{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:8px;border:1px dashed rgba(255,255,255,.27);background:rgba(255,255,255,.05);color:rgba(255,255,255,.6);cursor:pointer}
+.section-add-btn:hover{background:rgba(255,255,255,.11);color:#fff}
+.sec-chevron{font-size:11px;color:rgba(255,255,255,.28);transition:transform .2s;width:18px;text-align:center}
+.sec-open .sec-chevron{transform:rotate(180deg)}
+.section-body{display:none;padding-top:9px}
+.section-body.open{display:block}
+/* List rows */
+.list-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:13px 15px}
+.check-row,.pretrip-row{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.check-row:last-child,.pretrip-row:last-child{border-bottom:none}
+.check-box,.pretrip-check{width:25px;height:25px;border-radius:7px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s}
+.check-box.done,.pretrip-check.done{background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff}
+.check-box.todo{background:rgba(255,255,255,.07);border:2px dashed rgba(255,255,255,.2)}
+.pretrip-check.todo{background:rgba(255,255,255,.06);border:2px dashed rgba(255,255,255,.17);font-size:11px;color:rgba(255,255,255,.4)}
+.row-text-wrap{flex:1;min-width:0;cursor:pointer}
+.check-text{font-size:12px;line-height:1.5}
+.check-text.done{color:rgba(255,255,255,.32);text-decoration:line-through}
+.row-acts{display:flex;gap:3px;flex-shrink:0;margin-top:1px}
+.row-edit-btn,.row-del-btn{width:22px;height:22px;border-radius:5px;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:11px}
+.row-edit-btn{background:rgba(99,179,237,.09);color:rgba(144,202,249,.52)}
+.row-edit-btn:hover{background:rgba(99,179,237,.22);color:#90caf9}
+.row-del-btn{background:rgba(255,80,80,.06);color:rgba(255,128,128,.42)}
+.row-del-btn:hover{background:rgba(255,80,80,.18);color:#ff8080}
+/* Tips */
+.tips-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.tip-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:11px}
+.tip-emoji{font-size:18px;margin-bottom:4px}
+.tip-title{font-size:10.5px;font-weight:800;margin-bottom:2px}
+.tip-text{font-size:10.5px;color:rgba(255,255,255,.58);line-height:1.5}
+/* Glance */
+.glance-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:13px 15px}
+.glance-row{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.glance-row:last-child{border-bottom:none}
+.glance-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.glance-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);color:#fff;border-radius:6px;padding:3px 8px;font-size:10px;cursor:pointer;font-weight:700;margin-left:auto}
+/* Modals */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:100;display:none;align-items:center;justify-content:center;padding:14px}
+.modal-overlay.open{display:flex}
+.modal{background:#0f0a1a;border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:18px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto}
+.modal h3{font-size:14px;margin-bottom:13px}
+.mfield{margin-bottom:11px}
+.mfield label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:rgba(255,255,255,.36);margin-bottom:3px}
+.mfield input,.mfield textarea,.mfield select{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:8px;padding:7px 10px;font-size:12px;color:#fff;font-family:inherit;resize:vertical}
+.mfield input:focus,.mfield textarea:focus,.mfield select:focus{outline:none;border-color:rgba(255,255,255,.35)}
+.mfield textarea{min-height:64px;line-height:1.5}
+.mfield select option{background:#0f0a1a}
+.modal-btns{display:flex;gap:6px;justify-content:flex-end;margin-top:13px;flex-wrap:wrap}
+.modal-btns button{padding:7px 13px;border-radius:8px;border:none;cursor:pointer;font-weight:700;font-size:12px}
+.btn-save{background:linear-gradient(135deg,#e55039,#f9ca24);color:#1a0a00}
+.btn-cancel{background:rgba(255,255,255,.07);color:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.13)!important}
+.btn-del{background:rgba(255,80,80,.12);color:#ff8080;border:1px solid rgba(255,80,80,.2)!important}
+.btn-reset{background:rgba(255,150,50,.09);color:#ffb347;border:1px solid rgba(255,150,50,.2)!important}
+/* Loading */
+.loading-screen{position:fixed;inset:0;background:#0a0a1a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;z-index:200}
+.spin{width:34px;height:34px;border:3px solid rgba(255,255,255,.08);border-top-color:#e55039;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.footer{text-align:center;margin-top:20px;font-size:10px;color:rgba(255,255,255,.18)}
+</style>
+</head>
+<body>
+<div class="loading-screen" id="loadingScreen">
+  <div style="font-size:30px">✈️</div><div class="spin"></div>
+  <p style="font-size:11px;color:rgba(255,255,255,.4)">Loading Europe 2027…</p>
+</div>
+<div id="app" style="display:none">
+
+<div class="site-header">
+  <div class="sync-badge idle" id="syncBadge"><span class="sync-dot"></span><span id="syncLabel">Synced</span></div>
+  <div class="title">Europe 2027 ✈️</div>
+  <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px">Solo · Paris · Amsterdam · Liverpool · London</div>
+  <div class="meta-row">
+    <span class="meta-pill">📅 21 Jan – 3 Feb 2027</span>
+    <span class="meta-pill">🛫 SQ314 / SQ309</span>
+    <span class="meta-pill">🏨 4 Cities</span>
+  </div>
+  <div class="status-row">
+    <span class="status-pill sp-done">✅ Derby — 30 Jan 15:00 Forever Reds</span>
+    <span class="status-pill sp-done">✅ RC Lens — 27 Jan 20:00 Carlsberg Dugout</span>
+    <span class="status-pill sp-warn">⚡ Crazy Horse 23 Jan 21:30 — Book!</span>
+  </div>
+</div>
+
+<div class="city-nav" id="cityNav"></div>
+<div class="day-nav" id="dayNav"></div>
+<div class="day-banner-wrap" id="dayBannerWrap"></div>
+<div class="blocks" id="blocksContainer"></div>
+
+<div class="section">
+  <div class="section-toggle" id="secToggleBookings" onclick="toggleSection('Bookings')">
+    <div><div class="sec-title">📋 Bookings Status</div><div class="sec-meta" id="secMetaBookings">Tap to expand</div></div>
+    <div class="sec-right"><div class="sec-chevron">▼</div></div>
+  </div>
+  <div class="section-body" id="secBodyBookings">
+    <div class="list-card" id="bookingsContainer"></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-toggle" id="secToggleTips" onclick="toggleSection('Tips')">
+    <div><div class="sec-title">💡 City Tips</div><div class="sec-meta">Paris · Amsterdam · Liverpool · London</div></div>
+    <div class="sec-right"><div class="sec-chevron">▼</div></div>
+  </div>
+  <div class="section-body" id="secBodyTips">
+    <div class="tips-grid" id="tipsContainer"></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-toggle" id="secToggleGlance" onclick="toggleSection('Glance')">
+    <div><div class="sec-title">📅 All 14 Days</div><div class="sec-meta">Full trip overview</div></div>
+    <div class="sec-right"><div class="sec-chevron">▼</div></div>
+  </div>
+  <div class="section-body" id="secBodyGlance">
+    <div class="glance-card" id="glanceContainer"></div>
+  </div>
+</div>
+
+<div class="footer">Europe 2027 · tong.website/europe ✈️</div>
+</div>
+
+<!-- Block Modal -->
+<div class="modal-overlay" id="blockModal" onclick="closeModal('blockModal',event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3 id="blockModalTitle">✏️ Edit Block</h3>
+    <div class="mfield"><label>Icon</label><input id="bm_icon" maxlength="4"></div>
+    <div class="mfield"><label>Time</label><input id="bm_time"></div>
+    <div class="mfield"><label>Title</label><input id="bm_title"></div>
+    <div class="mfield"><label>Details</label><textarea id="bm_detail" rows="3"></textarea></div>
+    <div class="mfield"><label>Route</label><input id="bm_route"></div>
+    <div class="mfield"><label>Tag</label><input id="bm_tag"></div>
+    <div class="modal-btns">
+      <button class="btn-del" id="blockDelBtn" onclick="deleteEditingBlock()" style="display:none">🗑️</button>
+      <button class="btn-reset" id="blockResetBtn" onclick="resetBlock()" style="display:none">↺ Reset</button>
+      <button class="btn-cancel" onclick="closeModal('blockModal')">Cancel</button>
+      <button class="btn-save" onclick="saveBlock()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════ CITIES & DAYS ═══════════════════
+const CITIES=[
+{id:'paris',name:'Paris',emoji:'🗼',color:'#8B1A2C',days:[0,1,2,3]},
+{id:'amsterdam',name:'Amsterdam',emoji:'🌷',color:'#CC5500',days:[4,5,6]},
+{id:'liverpool',name:'Liverpool',emoji:'⚽',color:'#C8102E',days:[7,8,9,10,11]},
+{id:'london',name:'London',emoji:'🎡',color:'#1A3A6B',days:[12,13]}
+];
+
+const DAYS=[
+// ─── PARIS ───
+{date:'Thu 21 Jan',label:'Day 1',theme:'Arrival — SIN→LGW→Paris',emoji:'✈️',color:'#8B1A2C',accent:'#6B0F1F',iconBg:'#F9D0D7',
+blocks:[
+{time:'02:35',icon:'✈️',title:'Depart SIN — SQ314 Business',detail:'Long-haul overnight flight to London Gatwick. See Jet Lag Strategy — use the flight as a London night\'s sleep.\n\nSilverKris Lounge: shower, hydrate, light snack only. Sleep from ~21:00–21:30 London time.',route:null,tag:'💤 Sleep target: ~21:30 London time'},
+{time:'09:05',icon:'🛬',title:'Arrive London Gatwick',detail:'Thameslink from Gatwick to St Pancras (~45 min, contactless tap). Drop bags at St Pancras left luggage (Level 0, ~£14/bag).\n\nKeep the transit low-key — you\'ll be tired. Slow breakfast near King\'s Cross / Granary Square. Back at St Pancras by 14:45.',route:'Gatwick → Thameslink → St Pancras (~45 min)',tag:'⚠️ Danger window 14:00–17:00 — do not nap'},
+{time:'15:31',icon:'🚄',title:'Eurostar → Paris Gare du Nord',detail:'Paris Nord to Gare du Nord — entirely within Schengen, no passport control. Sit upright, coffee at the platform, stay engaged during the danger window.\n\nArrives Paris 18:59.',route:'St Pancras → Paris Gare du Nord (Plus fare ✅)',tag:null},
+{time:'18:59',icon:'🏨',title:'Arrive Paris → Hôtel Hélios Opéra',detail:'Taxi from Gare du Nord to Hôtel Hélios Opéra (~€15–20, big luggage). Check in, freshen up.\n\nHotel is in the 9th arr., Opéra/Grands Boulevards area — perfectly placed for Louvre, shopping, and Crazy Horse across all 4 days.',route:'Taxi: Gare du Nord → Hôtel Hélios Opéra',tag:null},
+{time:'~20:00',icon:'🍽️',title:'Dinner near hotel — easy first night',detail:'Keep it close and simple. Nothing ambitious after a full travel day.\n\nTarget bed by 21:30–22:00 Paris time.',route:null,tag:null}
+]},
+{date:'Fri 22 Jan',label:'Day 2',theme:'Louvre + Palais Royal',emoji:'🏛️',color:'#8B1A2C',accent:'#6B0F1F',iconBg:'#F9D0D7',
+blocks:[
+{time:'09:00',icon:'🏛️',title:'Louvre Museum',detail:'Pre-book at louvre.fr — Jan 2027 dates expected from Oct 2026. Arrive at opening. Priorities: Venus de Milo, Winged Victory, Mona Lisa (brief, crowded), Vermeer rooms, Egyptian Antiquities.\n\nCap at 2.5–3 hours. The Louvre is the world\'s largest art museum — don\'t try to see everything.',route:null,tag:null},
+{time:'12:00',icon:'☕',title:'Angelina — most famous hot chocolate in Paris',detail:'226 Rue de Rivoli — literally next to the Louvre exit. Chocolat chaud l\'Africain: thick, dark, made with African cocoa, served with whipped cream. Open since 1903. Queue is expected — worth every minute.',route:'Walk: Louvre exit → Angelina, Rue de Rivoli (2 min)',tag:'⭐ Do not skip this'},
+{time:'13:00',icon:'🌿',title:'Palais Royal Gardens',detail:'2-minute walk from the Louvre. Buren\'s striped columns in the central courtyard, arcaded gardens, peaceful and beautiful. First Emily in Paris location — used throughout all seasons.',route:'Walk: Louvre → Palais Royal (2 min)',tag:null},
+{time:'14:30',icon:'🛍️',title:'Afternoon free — Galeries Lafayette / Marais',detail:'Open afternoon for browsing. Either:\n• Galeries Lafayette Haussmann (15 min walk north) — full flagship, good food hall in basement\n• Le Marais (east) — vintage, concept stores, independent labels',route:null,tag:null},
+{time:'19:30',icon:'🍽️',title:'Dinner',detail:'See recommended eats below.',route:null,tag:null}
+]},
+{date:'Sat 23 Jan',label:'Day 3',theme:'La Vallée Village + Shopping + Crazy Horse',emoji:'🛍️',color:'#8B1A2C',accent:'#6B0F1F',iconBg:'#F9D0D7',
+blocks:[
+{time:'09:15',icon:'🚇',title:'RER A → La Vallée Village',detail:'La Vallée Village is a designer outlet village in Marne-la-Vallée — 100+ boutiques (Burberry, Gucci, Balenciaga, and others) at discounted prices. Open 10:00–20:00.\n\nRER A from Châtelet-Les Halles → Val d\'Europe (~45 min, ~€8 each way). Arrive at opening.',route:'RER A: Châtelet-Les Halles → Val d\'Europe (~45 min)',tag:null},
+{time:'10:00–13:30',icon:'🏪',title:'La Vallée Village shopping',detail:'Shop the outlets. Do not rush — this is a relaxed village format, not a mall. 🧇 Fresh stroopwafel at the market stall here if available — made warm on an iron.',route:null,tag:null},
+{time:'14:00',icon:'🏙️',title:'Return to Paris — central shopping',detail:'Back to Paris by ~14:00. Drop any La Vallée purchases at the hotel.\n\nContinue: Galeries Lafayette + Printemps (near hotel) → Rue Saint-Honoré (1st arr.) → Le Marais if energy allows.',route:'RER A back to Paris → Metro/walk to hotel',tag:'Drop purchases before continuing'},
+{time:'18:30',icon:'🍽️',title:'Early dinner — before the show',detail:'Dinner early to be done and at the venue by 20:45.\n\nSee recommended eats below.',route:null,tag:null},
+{time:'21:30',icon:'🎭',title:'Crazy Horse Cabaret',detail:'One of Paris\'s most celebrated cabaret shows — precision choreography, renowned lighting design, long-running institution. Avenue George V, 8th arr.\n\n⚠️ Book now at lecrazyhorseparis.com if not already done.',route:'Metro/Taxi → Avenue George V, 8th arr. (leave hotel by 20:45)',tag:'⚠️ Book at lecrazyhorseparis.com — tickets on sale now'}
+]},
+{date:'Sun 24 Jan',label:'Day 4',theme:'Orsay + Emily in Paris + Amsterdam',emoji:'🎨',color:'#8B1A2C',accent:'#6B0F1F',iconBg:'#F9D0D7',
+blocks:[
+{time:'09:30',icon:'🎨',title:'Musée d\'Orsay ✅ Booked',detail:'Booked: 09:30 with audio guide. Arrive a few minutes before your slot.\n\nBest Van Gogh collection in France: Starry Night Over the Rhône, Bedroom in Arles, self-portraits. Impressionist rooms (Monet, Renoir, Degas, Cézanne) world-class. The converted 1900 railway station is spectacular. Allow 2.5–3 hours.',route:null,tag:'✅ Booked 09:30 with audio guide'},
+{time:'12:30',icon:'🎬',title:'Emily in Paris route — Left Bank, west to east',detail:'Route flows naturally from Orsay eastward toward the islands — no backtracking.\n\n• Saint-Germain-des-Prés — Café de Flore and Les Deux Magots (used throughout all seasons)\n• Jardin du Luxembourg — used repeatedly in the series\n• Place de l\'Estrapade — Emily\'s apartment exterior, the defining establishing shot\n• Gabriel\'s restaurant exterior on the same square\n• Northeast via Panthéon toward the islands',route:'Walk: Orsay → Saint-Germain → Luxembourg → Estrapade (all Left Bank)',tag:null},
+{time:'14:00',icon:'⛪',title:'Notre-Dame de Paris',detail:'Reopened December 2024 after 5-year restoration. Fully rebuilt, more luminous than before. Free entry.\n\nOnline slot at notredamedeparis.fr is optional — opens only a few hours before your visit, not days ahead. Check the morning of Day 4.\n\nSainte-Chapelle next door if time (~€15, extraordinary stained glass).',route:'Walk: Estrapade area → Île de la Cité (~15 min)',tag:null},
+{time:'14:30',icon:'🍽️',title:'Final Paris lunch near the islands',detail:'Sit-down lunch near Notre-Dame / Left Bank. Last Paris meal.\n\nSee recommended eats below.',route:null,tag:null},
+{time:'15:22',icon:'🚄',title:'Train Paris → Amsterdam',detail:'Depart Paris Gare du Nord 15:22. Arrives Amsterdam Centraal ~18:42. Fully within Schengen — no passport control, no buffer needed.',route:'Taxi → Gare du Nord → Thalys/Eurostar → Amsterdam Centraal (~3h20) ✅',tag:null},
+{time:'~18:45',icon:'🌷',title:'Arrive Amsterdam → Park Centraal',detail:'Check in Park Centraal Amsterdam (Stadhouderskade 7) — next to Van Gogh Museum and Rijksmuseum. Great positioning.\n\nEasy first Amsterdam evening — canal walk, dinner nearby.',route:null,tag:null}
+]},
+// ─── AMSTERDAM ───
+{date:'Mon 25 Jan',label:'Day 5',theme:'Amsterdam — Albert Cuyp + First Look',emoji:'🌷',color:'#CC5500',accent:'#A04200',iconBg:'#FDDDB5',
+blocks:[
+{time:'09:00',icon:'🏪',title:'Albert Cuyp Market',detail:'One of the largest outdoor street markets in Europe — 260+ stalls. Fresh Dutch cheese, stroopwafels, herring, flowers, everything. Open Mon–Sat until ~17:00.\n\n🧇 Fresh stroopwafel made warm on a market iron — the most authentic version you\'ll find. Get one while walking the stalls.\n\n10-min walk from Park Centraal Hotel.',route:'Walk: Park Centraal → Albert Cuyp Market (~10 min)',tag:null},
+{time:'10:30',icon:'🌊',title:'Vondelpark + Museumplein walk',detail:'Vondelpark is right next to the hotel — 47 acres, peaceful in January. Walk through to Museumplein where Van Gogh Museum and Rijksmuseum sit side by side. You\'ll be back tomorrow for the museums themselves.',route:null,tag:null},
+{time:'13:00',icon:'🚶',title:'Canal walk — Jordaan + Dam Square',detail:'Walk north through the Jordaan neighbourhood — Amsterdam\'s most charming area. Narrow streets, independent cafés, art galleries.\n\nContinue to Dam Square: Royal Palace exterior, Nieuwe Kerk, National Monument. The central square of Amsterdam.',route:null,tag:null},
+{time:'19:00',icon:'🍽️',title:'Dinner — first Amsterdam night',detail:'See recommended eats below.',route:null,tag:null}
+]},
+{date:'Tue 26 Jan',label:'Day 6',theme:'Van Gogh + Markets + Dam Square',emoji:'🎨',color:'#CC5500',accent:'#A04200',iconBg:'#FDDDB5',
+blocks:[
+{time:'09:00',icon:'🎨',title:'Van Gogh Museum',detail:'⚠️ Book as soon as Jan 2027 dates open (Oct–Nov 2026) at vangoghmuseum.nl. Entry ticket, not reserve access. Sells out weeks ahead — this is the most important booking of the Amsterdam visit.\n\nWorld\'s largest Van Gogh collection: The Potato Eaters, Sunflowers, Bedroom in Arles, Almond Blossom, self-portraits. Allow 2.5–3 hours.\n\n5-min walk from Park Centraal Hotel.',route:'Walk: Hotel → Van Gogh Museum (5 min)',tag:'⚠️ Book Oct/Nov 2026 at vangoghmuseum.nl'},
+{time:'12:00',icon:'🍟',title:'Heertje Friet — Dutch chips',detail:'Famous Amsterdam friet shop. Classic Dutch fries (dikke friet) served in a cone with mayonnaise. Verify location before visiting — worth a short detour.\n\nOrder with mayo — the Dutch way.',route:null,tag:null},
+{time:'13:00',icon:'🌸',title:'Bloemenmarkt (Flower Market)',detail:'The world\'s only floating flower market — stalls on barges along the Singel canal at Koningsplein. Famous for tulip bulbs, seeds, dried flowers. Good for gifts to bring back.\n\nOpen Mon–Sat until 17:30.',route:'Walk or tram north from Van Gogh area → Bloemenmarkt, Singel',tag:null},
+{time:'13:30',icon:'🍪',title:'Van Stapele Koekmakerij',detail:'2-min walk from Bloemenmarkt. Heilige Weg 57. Single-variety dark chocolate chip cookie with a molten chocolate centre. Queue outside is normal and moves fast.\n\nBuy two.',route:'Walk: Bloemenmarkt → Van Stapele, Heilige Weg (2 min)',tag:'⭐ Must stop'},
+{time:'14:00',icon:'🧇',title:'Lanskroon — flagship Dutch waffle',detail:'Right next to Bloemenmarkt at Singel 385. Traditional Amsterdam bakery since 1880. Dutch syrup waffles (stroopwafels) and gouda waffles made in-house.\n\nThe flagship waffle experience — better than any tourist shop.',route:'Singel 385, next to Bloemenmarkt',tag:null},
+{time:'14:30',icon:'🏛️',title:'Dam Square',detail:'5-min walk north from Bloemenmarkt. The central square of Amsterdam: Royal Palace, Nieuwe Kerk, National Monument. Take time here — it\'s the heart of the city.',route:'Walk north from Bloemenmarkt → Dam Square (5 min)',tag:null},
+{time:'19:00',icon:'🍽️',title:'Dinner',detail:'See recommended eats below.',route:null,tag:null}
+]},
+{date:'Wed 27 Jan',label:'Day 7',theme:'Amsterdam → Liverpool + RC Lens 🏆',emoji:'🔴',color:'#CC5500',accent:'#A04200',iconBg:'#FDDDB5',
+blocks:[
+{time:'05:45',icon:'⏰',title:'Wake up — early start',detail:'Taxi to Amsterdam Centraal Station. Leave hotel by 05:45–05:50. Pack everything the night before.',route:'Taxi: Park Centraal → Amsterdam Centraal (~15 min)',tag:'⚠️ Pack the night before'},
+{time:'06:40',icon:'🚄',title:'Eurostar Amsterdam → London St Pancras',detail:'Departs 06:40, arrives London St Pancras 09:57. Book separately at eurostar.com. ✅ Booked.',route:'Amsterdam Centraal → London St Pancras ✅ 06:40–09:57',tag:null},
+{time:'10:15',icon:'🚄',title:'London Euston → Liverpool Lime Street',detail:'Short walk or taxi from St Pancras to Euston (~10 min). Train to Liverpool ~2h15. Book Advance fare from ~1 Nov 2026 at avanti.co.uk or nationalrail.co.uk.\n\nTarget departure ~10:00–10:15 for Liverpool arrival ~12:30.',route:'St Pancras → Euston (walk/taxi) → Liverpool Lime Street (~2h15)',tag:'📱 Book from ~1 Nov 2026'},
+{time:'12:30',icon:'🏨',title:'Arrive Liverpool → Delta Hotels',detail:'Walk from Lime Street to Delta Hotels Liverpool City Centre, Queen Square. Check in. Drop bags. Freshen up. Eat something proper.\n\nYou have a comfortable 4+ hours before the Carlsberg Dugout opens.',route:'Walk: Lime Street → Delta Hotels Queen Square (~10 min)',tag:null},
+{time:'16:30',icon:'⚽',title:'Head to Anfield — Carlsberg Dugout',detail:'Leave hotel by 16:30. Bus 17 from Queen Square (right outside Delta) direct to Anfield. Or 917 matchday express from Commutation Row near Lime Street.\n\nArrive Anfield by 17:00. Enter via Main Stand Reception Level 2. Carlsberg Dugout is on Level 4. Seating is not guaranteed at peak times — arrive at opening.',route:'Bus 17 from Queen Square → Anfield. Enter via Main Stand Reception Level 2.',tag:null},
+{time:'17:00',icon:'🏟️',title:'Carlsberg Dugout opens',detail:'Carlsberg Dugout, Level 4, Main Stand.\n\n• Complimentary street food stalls (served up to kickoff)\n• Cashless pay bar pre-match and 1hr post-match\n• Visit from a former LFC or LFCW player\n• Half-time complimentary drink (beer / wine / soft drink, pre-poured)\n• Matchday programme\n• Free WiFi\n\nNote: lounge seating at a premium — get there at 17:00 opening.',route:null,tag:'✅ Carlsberg Dugout · Block M9 Main Stand Middle Tier'},
+{time:'20:00',icon:'🏆',title:'Liverpool v RC Lens — Champions League',detail:'Kickoff 20:00. Champions League night at Anfield. Block M9, Main Stand Middle Tier.',route:null,tag:'🏆 Champions League'},
+{time:'~22:00',icon:'🍺',title:'Post-match — Carlsberg Dugout (1hr)',detail:'Lounge remains open for 1 hour after final whistle. Stay — no rush to join the crowds outside. Cashless bar continues.\n\nHead back to Delta when you\'re ready, ~22:30–23:00.',route:null,tag:null}
+]},
+// ─── LIVERPOOL ───
+{date:'Thu 28 Jan',label:'Day 8',theme:'Liverpool — Recover + Explore',emoji:'🎵',color:'#C8102E',accent:'#9A0020',iconBg:'#F9C0C8',
+blocks:[
+{time:'Late start',icon:'☕',title:'Recovery morning',detail:'You were back at the hotel around 23:00 after a Champions League night. No alarm. Slow breakfast.\n\nThe city is yours for the day — easy exploration, no match pressure.',route:null,tag:null},
+{time:'11:00',icon:'🌊',title:'Albert Dock + Waterfront',detail:'Walk to Albert Dock — one of the finest Victorian dock complexes in the world. The Three Graces across the Pier Head: Royal Liver Building, Cunard Building, Port of Liverpool Building.\n\nWalk the Pier Head promenade. The most iconic Liverpool waterfront view.',route:null,tag:null},
+{time:'13:00',icon:'🎸',title:'The Beatles Story Museum',detail:'Albert Dock. The world\'s most comprehensive Beatles museum — from Hamburg clubs to Abbey Road. Allow 2 hours. Book ahead at beatlesstory.com.',route:null,tag:'📱 Book ahead'},
+{time:'15:30',icon:'🎶',title:'Mathew Street + Cavern Club',detail:'Short walk from Albert Dock. The Cavern Club where The Beatles played 292 times. Mathew Street is lined with music venues and memorabilia shops.',route:null,tag:null},
+{time:'19:00',icon:'🍽️',title:'Dinner',detail:'See recommended eats below.',route:null,tag:null}
+]},
+{date:'Fri 29 Jan',label:'Day 9',theme:'Liverpool — Cathedrals + Neighbourhoods',emoji:'⛪',color:'#C8102E',accent:'#9A0020',iconBg:'#F9C0C8',
+blocks:[
+{time:'10:00',icon:'🏟️',title:'Anfield Stadium Tour',detail:'Book at liverpoolfc.com after kickoff day is confirmed (non-refundable — don\'t book until confirmed). Includes pitch-side, dressing rooms, tunnel, updated museum. Allow 2 hours.\n\nYour third Anfield visit — the museum has been updated since last time.',route:'Taxi to Anfield (~£12–15) or Bus 17 from Queen Square',tag:'⚠️ Book only after derby kickoff confirmed'},
+{time:'13:00',icon:'⛪',title:'Hope Street walk — Two Cathedrals',detail:'One of the best architectural walks in England.\n\n• Liverpool Metropolitan Cathedral (RC, 1967) — modernist circular design, known as "Paddy\'s Wigwam", extraordinary lantern tower interior\n• Walk 500m along Hope Street\n• Liverpool Anglican Cathedral — largest in the UK, Gothic revival completed 1978\n\nThe contrast between the two is remarkable.',route:'Hope Street connects both cathedrals (~500m walk)',tag:null},
+{time:'15:30',icon:'🛍️',title:'Bold Street + independent shops',detail:'Bold Street is Liverpool\'s most vibrant independent shopping street — cafés, bookshops, vintage, food. Good afternoon browse.',route:null,tag:null},
+{time:'19:00',icon:'🍽️',title:'Dinner',detail:'See recommended eats below.',route:null,tag:null}
+]},
+{date:'Sat 30 Jan',label:'Day 10',theme:'Match Weekend — Day 1',emoji:'⚽',color:'#C8102E',accent:'#9A0020',iconBg:'#F9C0C8',
+blocks:[
+{time:'TBC',icon:'⚽',title:'Match Weekend — Day 1 (flexible)',detail:'Current scheduled kickoff: Saturday 30 Jan 15:00.\n\nIF MATCH IS TODAY (Saturday):\n→ See Derby Day plan below. Forever Reds Lounge from 12:00.\n\nIF MATCH MOVES TO SUNDAY:\n→ This is your free day. Options: explore Liverpool City Centre, visit Crosby Beach (Anthony Gormley\'s iron men sculptures, 30 min by Merseyrail), or take it easy before tomorrow.',route:null,tag:'🟡 Derby kickoff TBC — Saturday or Sunday'},
+{time:'12:00',icon:'🏟️',title:'DERBY DAY: Forever Reds Lounge (if Sat)',detail:'⚠️ Cancel whichever hotel standby option you\'re not using today.\n\nEnter via Sir Kenny Dalglish Stand Reception. Forever Reds Lounge access 3hrs before kickoff.\n\n• Complimentary pre-match street food\n• Cashless pay bar\n• Former LFC/LFCW player visit\n• Half-time complimentary drink\n\nLounge seating premium — arrive promptly at 12:00.',route:'Bus 17 from Queen Square. Enter: Sir Kenny Dalglish Stand Reception.',tag:'✅ Forever Reds Lounge · Sir Kenny Dalglish Stand Lower Tier'},
+{time:'15:00',icon:'🔴',title:'DERBY DAY: Liverpool v Everton — KO 15:00',detail:'The Merseyside Derby. Anfield. Hospitality tickets confirmed.',route:null,tag:'🔴 Liverpool v Everton · Merseyside Derby'},
+{time:'~17:15',icon:'🍺',title:'Post-match — Forever Reds (1hr)',detail:'Lounge open 1hr after final whistle. Stay until crowds thin. Cashless bar continues. Leave ~18:00+.',route:null,tag:null}
+]},
+{date:'Sun 31 Jan',label:'Day 11',theme:'Match Weekend — Day 2',emoji:'⚽',color:'#C8102E',accent:'#9A0020',iconBg:'#F9C0C8',
+blocks:[
+{time:'TBC',icon:'⚽',title:'Match Weekend — Day 2 (flexible)',detail:'IF MATCH IS TODAY (Sunday):\n→ See Derby Day plan on Day 10 — same format, Forever Reds Lounge from 12:00 (assuming same KO time).\n\nIF MATCH WAS YESTERDAY (Saturday):\n→ Free day. Gentle recovery. Options: Crosby Beach iron men, RHS Garden Bridgewater (day trip), or slow morning + last Liverpool explores before heading to London tomorrow.',route:null,tag:'🟡 Depends on derby schedule'},
+{time:'~12:00',icon:'🏟️',title:'DERBY DAY: Forever Reds Lounge (if Sun)',detail:'Same as Day 10 Derby plan — Forever Reds Lounge from 3hrs before KO. Enter via Sir Kenny Dalglish Stand Reception.',route:null,tag:'If derby moves to Sunday'}
+]},
+{date:'Mon 1 Feb',label:'Day 12',theme:'Liverpool → London',emoji:'🚄',color:'#C8102E',accent:'#9A0020',iconBg:'#F9C0C8',
+blocks:[
+{time:'Morning',icon:'🌊',title:'Final Liverpool morning',detail:'Last waterfront walk or breakfast at the Albert Dock. Easy morning before checkout.',route:null,tag:null},
+{time:'Late morning',icon:'🚄',title:'Train Liverpool → London Euston',detail:'Walk to Lime Street → train to London Euston (~2h15). Book Advance fare from ~1 Nov 2026.',route:'Walk: Delta → Lime Street → Euston (~2h15). Book from ~1 Nov 2026.',tag:null},
+{time:'Afternoon',icon:'🏨',title:'Arrive London → citizenM Victoria',detail:'Taxi from Euston to citizenM Victoria Station. Check in.\n\n2 nights in London before Gatwick departure on 3 Feb.',route:'Taxi: Euston → citizenM Victoria Station',tag:null},
+{time:'Evening',icon:'🍽️',title:'First London evening',detail:'Easy dinner near Victoria or a short walk to Westminster. Keep it low-key after a big Liverpool stint.',route:null,tag:null}
+]},
+// ─── LONDON ───
+{date:'Tue 2 Feb',label:'Day 13',theme:'London — Final Day',emoji:'🎡',color:'#1A3A6B',accent:'#0F2447',iconBg:'#B8CCE8',
+blocks:[
+{time:'Morning',icon:'🏛️',title:'Westminster + Churchill War Rooms',detail:'Westminster Abbey — pre-book at westminster-abbey.org (~£30). Allow 1.5 hours.\n\nChurchill War Rooms (Imperial War Museum) — right next door, ~£30. The underground bunker where Churchill directed WWII. Fascinating.',route:'Walk: citizenM Victoria → Westminster (15 min)',tag:null},
+{time:'Afternoon',icon:'🛍️',title:'Covent Garden + options',detail:'Covent Garden market, street performers, good browsing. National Gallery (free) for 45 min if wanted — Van Gogh and Turner rooms. Trafalgar Square.\n\nOr: Notting Hill / Portobello Road area if not done. V&A Museum (free, excellent).',route:null,tag:null},
+{time:'19:00',icon:'🍽️',title:'Best dinner of the trip',detail:'Last full dinner — make it count. See recommended eats below.',route:null,tag:'🎉 Final dinner'},
+{time:'Optional',icon:'🎭',title:'West End show (if booked)',detail:'If a show is booked — pre-theatre dinner earlier. Check what\'s running and book well in advance for anything good.',route:null,tag:'Book in advance if wanted'}
+]},
+{date:'Wed 3 Feb',label:'Day 14',theme:'Depart Gatwick — SQ309',emoji:'🛫',color:'#1A3A6B',accent:'#0F2447',iconBg:'#B8CCE8',
+blocks:[
+{time:'05:30',icon:'⏰',title:'Wake up — bags already packed',detail:'Pack everything the night before. Early morning, no time for chaos. Quick coffee, final room sweep.',route:null,tag:'⚠️ Pack night before — non-negotiable'},
+{time:'06:30',icon:'🚂',title:'Victoria Station → Gatwick Express',detail:'Walk from citizenM to Victoria Station (~3 min). Gatwick Express direct, ~30 min. Buy ticket at the station or in advance at gatwickexpress.com.',route:'citizenM → Victoria Station (walk) → Gatwick Express → LGW (~30 min)',tag:null},
+{time:'07:00',icon:'🛬',title:'Arrive Gatwick — LGW Terminal South',detail:'SQ309 departs from LGW South Terminal. Check-in, bag drop, security. Singapore Airlines — allow 2 hours at the airport.\n\nT1 Gatwick lounge if access available.',route:null,tag:null},
+{time:'09:20',icon:'✈️',title:'SQ309 — London Gatwick → Singapore',detail:'Business class. Arrives Singapore Changi 4 Feb 06:15 local time.',route:'LGW → SIN, Business ✅',tag:null}
+]}
+];
+
+const BLOCK_EATS={
+'0_4':[
+{icon:'🥘',name:'Bouillon Chartier',type:'Grands Boulevards — historic brasserie',why:'1896 interior unchanged. Very affordable, no reservations, queue moves fast. Perfect easy first night.',tag:'Walk from hotel'},
+{icon:'🍷',name:'Au Petit Riche',type:'Classic French brasserie — Rue Le Peletier',why:'Quieter, good solo dining, reservations possible. More intimate than Chartier.',tag:null}
+],
+'1_4':[
+{icon:'🥩',name:'Frenchie',type:'Modern French bistro — Rue du Nil, 2nd',why:'Small, excellent, book 2–3 weeks before travel.',tag:'Book ahead'},
+{icon:'🍷',name:'Au Passage',type:'Natural wine bar — Rue de Charonne, 11th',why:'Casual, excellent small plates, good for solo.',tag:null}
+],
+'2_3':[
+{icon:'🍽️',name:'Septime',type:'Modern French — Rue de Charonne, 11th',why:'One of Paris\'s best. Book 3–4 weeks before travel.',tag:'⭐ Book ahead'},
+{icon:'🏮',name:'Le Grand Café des Capucines',type:'Belle Époque brasserie — near hotel',why:'No reservations, open late, spectacular interior. Near hotel.',tag:null}
+],
+'3_3':[
+{icon:'🍜',name:'Le Comptoir du Relais',type:'French bistro — Carrefour de l\'Odéon, 6th',why:'À la carte lunch, Saint-Germain institution. Good terrace.',tag:null},
+{icon:'☕',name:'Café de Flore',type:'Literary café — Boulevard Saint-Germain',why:'Historic, featured in Emily in Paris. Worth a proper sit-down once.',tag:null}
+],
+'4_4':[
+{icon:'🍺',name:'Café \'t Smalle',type:'Classic Dutch brown café — Jordaan',why:'Perfect first Amsterdam evening. Canalside, warm, historic.',tag:null},
+{icon:'🥘',name:'Moeders',type:'Homestyle Dutch — Rozengracht, Jordaan',why:'Charming, comfort food, book ahead.',tag:'Book ahead'}
+],
+'5_3':[
+{icon:'🏠',name:'D\'Vijff Vlieghen',type:'Traditional Dutch — Spuistraat',why:'Five interconnected 17th-century rooms. Classic Amsterdam dining experience.',tag:null},
+{icon:'🍷',name:'Rijsel',type:'Belgian/French bistro — Marcusstraat',why:'Excellent value, book ahead.',tag:'Book ahead'}
+],
+'7_4':[
+{icon:'🍛',name:'Bundobust',type:'Indian street food + craft beer — Bold Street',why:'Casual, fun, great post-Champions League arrival dinner. No reservations.',tag:null},
+{icon:'🍽️',name:'Röski',type:'Modern tasting menu — Hope Street',why:'Liverpool\'s best fine dining. Book ahead if marking the occasion.',tag:'Book ahead'}
+],
+'8_4':[
+{icon:'🏛️',name:'The Art School',type:'Fine dining — Hope Street',why:'The best restaurant in Liverpool. Book ahead.',tag:'⭐ Book ahead'},
+{icon:'🥙',name:'Maray',type:'Middle Eastern small plates — Bold Street',why:'Casual, excellent, no reservations needed. Good for solo.',tag:null}
+],
+'12_3':[
+{icon:'🦞',name:'Rules',type:'Oldest restaurant in London — Maiden Lane, WC2',why:'Open since 1798. Game and traditional British. Book well ahead.',tag:'⭐ Book ahead'},
+{icon:'🥩',name:'Hawksmoor',type:'Best steak in London — multiple locations',why:'Consistently excellent. Book ahead.',tag:'Book ahead'},
+{icon:'🐟',name:'J. Sheekey Fish Bar',type:'Counter seafood — St Martin\'s Court, WC2',why:'Walk-in counter seating. Excellent for solo. No reservations.',tag:null}
+]
+};
+
+const BOOKINGS=[
+{id:'bk0',icon:'✈️',text:'SQ314 — 21 Jan 02:35 SIN → 09:05 LGW, Business',done:true},
+{id:'bk1',icon:'✈️',text:'SQ309 — 3 Feb 09:20 LGW → 4 Feb 06:15 SIN, Business',done:true},
+{id:'bk2',icon:'🚄',text:'Eurostar outbound — 21 Jan 15:31 St Pancras → 18:59 Gare du Nord (Plus)',done:true},
+{id:'bk3',icon:'🚄',text:'Paris → Amsterdam — 24 Jan 15:22 GdN → ~18:42 AMS Centraal',done:true},
+{id:'bk4',icon:'🚄',text:'Eurostar Amsterdam → London — 27 Jan 06:40 → 09:57',done:true},
+{id:'bk5',icon:'✈️',text:'EasyJet — 28 Jan 21:30 AMS → 21:55 LPL (leaving as-is)',done:true},
+{id:'bk6',icon:'🏨',text:'Hôtel Hélios Opéra, Paris — 21–24 Jan (change pending hotel confirmation)',done:false},
+{id:'bk7',icon:'🏨',text:'Park Centraal Amsterdam — 24–27 Jan (date shift TBD)',done:false},
+{id:'bk8',icon:'🏨',text:'Delta Hotels Liverpool — 27 Jan–1 Feb (5 nights)',done:true},
+{id:'bk9',icon:'🏨',text:'citizenM Victoria London — 1–3 Feb (2 nights)',done:true},
+{id:'bk10',icon:'🎭',text:'Musée d\'Orsay — 24 Jan 09:30 with audio guide',done:true},
+{id:'bk11',icon:'🎭',text:'Crazy Horse Cabaret — 23 Jan 21:30 (lecrazyhorseparis.com)',done:false},
+{id:'bk12',icon:'⚽',text:'Liverpool v RC Lens — 27 Jan 20:00, Carlsberg Dugout hospitality, Block M9',done:true},
+{id:'bk13',icon:'⚽',text:'Liverpool v Everton — 30 Jan 15:00, Forever Reds Lounge, Sir Kenny Dalglish Stand',done:true},
+{id:'bk14',icon:'🚄',text:'London → Liverpool train (27 Jan ~10:00) — book from ~1 Nov 2026',done:false},
+{id:'bk15',icon:'🚄',text:'Liverpool → London train (1 Feb) — book from ~1 Nov 2026',done:false},
+{id:'bk16',icon:'🎨',text:'Van Gogh Museum Amsterdam — book Oct/Nov 2026 at vangoghmuseum.nl',done:false},
+{id:'bk17',icon:'🏛️',text:'Louvre tickets — check from Oct 2026 (Jan 2027 not yet on sale)',done:false}
+];
+
+const TIPS=[
+{icon:'😴',title:'Jet Lag — Day 1',text:'Use the flight as a London night\'s sleep. Sleep from ~21:30 London time. Danger window 14:00–17:00 on arrival day. No napping on the Eurostar.'},
+{icon:'🛂',title:'Paris → Amsterdam',text:'Fully within Schengen — no passport control, no buffer time needed at Gare du Nord. Just show up at the platform.'},
+{icon:'🏟️',title:'Carlsberg Dugout',text:'Opens 17:00 (3hrs before RC Lens KO). Seating at premium — arrive at opening. Enter via Main Stand Reception Level 2, lounge is Level 4.'},
+{icon:'🎟️',title:'Forever Reds Lounge',text:'Opens 12:00 (3hrs before derby KO). Enter via Sir Kenny Dalglish Stand Reception. Cashless bar.'},
+{icon:'🌷',title:'Van Gogh Museum',text:'Book entry ticket (not reserve access) at vangoghmuseum.nl from Oct/Nov 2026. Sells out weeks ahead — this is the most critical Amsterdam booking.'},
+{icon:'💳',title:'Amsterdam + London',text:'Contactless bank card works on all Amsterdam GVB trams/metro/bus and London Tube/bus. No Oyster or separate card needed in either city.'},
+{icon:'🚌',title:'To Anfield',text:'Bus 17 from Queen Square (in front of Delta Hotels) direct to Anfield. OR 917 matchday express from Commutation Row. Both work well.'},
+{icon:'🛫',title:'Departure morning',text:'Leave citizenM Victoria by 06:30. Walk to Victoria Station. Gatwick Express direct ~30 min. At LGW by 07:05. SQ309 09:20.'},
+{icon:'🌡️',title:'January weather',text:'Paris 4–8°C · Amsterdam 2–7°C (coldest) · Liverpool 4–8°C with Mersey wind · London 5–10°C. Proper winter coat throughout. Amsterdam especially cold.'},
+{icon:'💴',title:'Currency',text:'Euro: Paris + Amsterdam. GBP: Liverpool + London. All four cities near-cashless — minimal cash needed.'}
+];
+
+// ═══════════════════ STATE ═══════════════════
+let state={edits:{},notes:{},customBlocks:{},bookingDone:{}};
+let activeCity=0,activeDay=0,saveTimer=null,expandedBlocks=new Set();
+
+function syncBadge(s){const e=document.getElementById('syncBadge'),l=document.getElementById('syncLabel');e.className='sync-badge '+s;l.textContent=s==='saving'?'Saving…':s==='error'?'Offline':'Synced';}
+async function loadState(){try{const r=await fetch('/api/state?trip=europe2027');if(!r.ok)throw 0;const d=await r.json();state.edits=d.edits||{};state.notes=d.notes||{};state.customBlocks=d.customBlocks||{};state.bookingDone=d.bookingDone||{};syncBadge('idle');}catch{syncBadge('error');}}
+async function saveState(){syncBadge('saving');try{const r=await fetch('/api/state?trip=europe2027',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(state)});if(!r.ok)throw 0;syncBadge('idle');}catch{syncBadge('error');}}
+function scheduleSave(){clearTimeout(saveTimer);saveTimer=setTimeout(saveState,500);}
+function getCB(d){return state.customBlocks[String(d)]||[];}
+function bKey(d,b){return d+'_'+b;}
+function getBlock(d,b){const k=bKey(d,b),base=DAYS[d].blocks[b],e=state.edits[k]||{};return{time:e.time!==undefined?e.time:base.time,icon:e.icon!==undefined?e.icon:base.icon,title:e.title!==undefined?e.title:base.title,detail:e.detail!==undefined?e.detail:base.detail,route:e.route!==undefined?e.route:base.route,tag:e.tag!==undefined?e.tag:base.tag};}
+function tc(c){return({'#8B1A2C':'#F9C0C8','#CC5500':'#FDDDB5','#C8102E':'#FFB3BB','#1A3A6B':'#B8CCE8'})[c]||'#fff';}
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>');}
+function uid(){return'u'+Date.now()+Math.random().toString(36).slice(2,6);}
+function firstLine(s){if(!s)return'';const clean=s.replace(/<br>/g,' ');const l=clean.split('\n')[0];return l.length>65?l.slice(0,63)+'…':l;}
+
+// ═══════════════════ RENDER ═══════════════════
+function renderAll(){renderCityNav();renderDayNav();renderDayBanner();renderBlocks();}
+
+function renderCityNav(){
+  document.getElementById('cityNav').innerHTML=CITIES.map((c,i)=>`
+    <button class="city-btn${i===activeCity?' active':''}" onclick="switchCity(${i})"
+      style="${i===activeCity?'--city-color:'+c.color:''}">
+      <span class="city-emoji">${c.emoji}</span>${c.name}
+    </button>`).join('');
+}
+
+function renderDayNav(){
+  const city=CITIES[activeCity];
+  document.getElementById('dayNav').innerHTML=city.days.map((di,i)=>{
+    const d=DAYS[di];
+    const parts=d.date.split(' ');
+    const isActive=di===activeDay;
+    return`<button class="day-btn${isActive?' active':''}" onclick="switchDay(${di})"
+      style="${isActive?'background:'+d.color+';border-color:'+d.color:''}">
+      <span class="d-num">${d.label}</span>
+      <span class="d-date">${parts[0]} ${parts[1]}</span>
+    </button>`;
+  }).join('');
+}
+
+function renderDayBanner(){
+  const d=DAYS[activeDay];
+  const cc=getCB(activeDay).length;
+  const total=d.blocks.length+cc;
+  document.getElementById('dayBannerWrap').innerHTML=`
+    <div class="day-banner" style="background:linear-gradient(135deg,${d.color}cc,${d.accent}aa);box-shadow:0 6px 24px ${d.color}44">
+      <div class="big-emoji">${d.emoji}</div>
+      <div class="banner-body">
+        <div class="day-sub">${d.label} · ${d.date}</div>
+        <div class="day-title">${d.theme}</div>
+        <div class="banner-meta">${total} blocks${cc?' · '+cc+' added':''}${expandedBlocks.size?' · '+expandedBlocks.size+' expanded':''}</div>
+        <div class="banner-acts">
+          <button class="banner-btn" onclick="expandAll()">↕ Expand All</button>
+          <button class="banner-btn" onclick="collapseAll()">↕ Collapse All</button>
+          <button class="banner-btn primary" onclick="openBlockModal('new',${activeDay},null)">＋ Add Block</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderBlocks(){
+  const d=DAYS[activeDay];
+  const dH=d.blocks.map((_,bi)=>{
+    const key=bKey(activeDay,bi);
+    return blockHtml(key,getBlock(activeDay,bi),d,BLOCK_EATS[key]||[],
+      `openBlockModal('default',${activeDay},${bi})`,null,false);
+  }).join('');
+  const cH=getCB(activeDay).map(cb=>{
+    const key='custom_'+cb.id;
+    return blockHtml(key,cb,d,[],
+      `openBlockModal('custom',${activeDay},'${cb.id}')`,
+      `delCB(${activeDay},'${cb.id}')`,true);
+  }).join('');
+  document.getElementById('blocksContainer').innerHTML=dH+cH;
+}
+
+function blockHtml(key,blk,d,eats,editFn,delFn,isCustom){
+  const isOpen=expandedBlocks.has(key),sk=key.replace(/'/g,"\\'"),note=state.notes[key]||'';
+  const eatHtml=eats.length?`<div class="eats-divider">🍽 recommended eats</div>${eats.map(e=>`<div class="eat-inline"><div class="eat-inline-icon">${e.icon}</div><div class="eat-inline-body"><div class="eat-inline-name">${esc(e.name)}</div><div class="eat-inline-type">${esc(e.type)}</div><div class="eat-inline-why">${esc(e.why)}</div>${e.tag?`<div class="eat-tag">${esc(e.tag)}</div>`:''}</div></div>`).join('')}`:'';
+  const noteHtml=note?`<div class="note-display" onclick="editNote('${sk}')">📝 ${esc(note)}</div>`:`<button class="note-empty-btn" onclick="editNote('${sk}')">+ Add a note…</button>`;
+  return`<div class="block${isCustom?' custom-block':''}${isOpen?' open':''}" id="bl_${key}" style="border-left-color:${d.color}">
+<div class="block-head" onclick="toggleBlock('${sk}')">
+<div class="b-icon" style="background:${d.iconBg}">${blk.icon||'📌'}</div>
+<div class="b-summary">
+<div class="b-title">${esc(blk.title)}</div>
+${!isOpen&&blk.detail?`<div class="b-sub">${esc(firstLine(blk.detail))}</div>`:''}
+</div>
+<div class="b-right">
+<div class="time-badge" style="background:${d.color}22;color:${d.color};border:1px solid ${d.color}44">${esc(blk.time)}</div>
+<button class="bact-btn bact-edit" onclick="event.stopPropagation();${editFn}">✏️</button>
+${delFn?`<button class="bact-btn bact-del" onclick="event.stopPropagation();${delFn}">🗑️</button>`:''}
+<span class="b-chevron">▼</span>
+</div>
+</div>
+<div class="block-body">
+<div class="b-detail">${esc(blk.detail)}</div>
+${blk.route?`<div class="route-box">🗺️ ${esc(blk.route)}</div>`:''}
+${blk.tag?`<div class="tag-box" style="background:${d.color}15;color:${tc(d.color)};border-color:${d.color}38">${esc(blk.tag)}</div>`:''}
+${eatHtml}
+<div class="note-area" id="na_${key}">${noteHtml}</div>
+</div>
+</div>`;
+}
+
+function toggleBlock(key){if(expandedBlocks.has(key))expandedBlocks.delete(key);else expandedBlocks.add(key);renderDayBanner();renderBlocks();}
+function expandAll(){DAYS[activeDay].blocks.forEach((_,bi)=>expandedBlocks.add(bKey(activeDay,bi)));getCB(activeDay).forEach(cb=>expandedBlocks.add('custom_'+cb.id));renderDayBanner();renderBlocks();}
+function collapseAll(){expandedBlocks.clear();renderDayBanner();renderBlocks();}
+
+function toggleSection(id){
+  const body=document.getElementById('secBody'+id);
+  const toggle=document.getElementById('secToggle'+id);
+  const isOpen=body.classList.contains('open');
+  if(isOpen){body.classList.remove('open');toggle.classList.remove('sec-open');}
+  else{body.classList.add('open');toggle.classList.add('sec-open');
+    if(id==='Bookings')renderBookings();
+    else if(id==='Tips')renderTips();
+    else if(id==='Glance')renderGlance();}
+}
+
+function renderBookings(){
+  document.getElementById('bookingsContainer').innerHTML=BOOKINGS.map((b,i)=>{
+    const done=state.bookingDone[b.id]!==undefined?state.bookingDone[b.id]:b.done;
+    return`<div class="check-row">
+      <div class="check-box ${done?'done':'todo'}" onclick="toggleBookingDone('${b.id}')">${done?'✓':esc(b.icon)}</div>
+      <div class="row-text-wrap" onclick="toggleBookingDone('${b.id}')">
+        <div class="check-text${done?' done':''}">${esc(b.text)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleBookingDone(id){
+  const base=BOOKINGS.find(b=>b.id===id);
+  state.bookingDone[id]=!(state.bookingDone[id]!==undefined?state.bookingDone[id]:(base?base.done:false));
+  scheduleSave();renderBookings();
+}
+
+function renderTips(){document.getElementById('tipsContainer').innerHTML=TIPS.map(t=>`<div class="tip-card"><div class="tip-emoji">${t.icon}</div><div class="tip-title">${esc(t.title)}</div><div class="tip-text">${esc(t.text)}</div></div>`).join('');}
+
+function renderGlance(){
+  document.getElementById('glanceContainer').innerHTML=DAYS.map((d,i)=>`
+    <div class="glance-row">
+      <div class="glance-icon" style="background:${d.color}">${d.emoji}</div>
+      <div style="flex:1">
+        <div style="font-size:9.5px;color:rgba(255,255,255,.35);font-weight:700">${d.date}</div>
+        <div style="font-size:12px;font-weight:700;margin-top:1px">${d.theme}</div>
+      </div>
+      <button class="glance-btn" onclick="jumpToDay(${i})" style="border-color:${d.color}44">Go →</button>
+    </div>`).join('');
+}
+
+function jumpToDay(dayIndex){
+  const cityIndex=CITIES.findIndex(c=>c.days.includes(dayIndex));
+  if(cityIndex>=0){activeCity=cityIndex;activeDay=dayIndex;expandedBlocks.clear();renderAll();document.querySelector('.city-nav').scrollIntoView({behavior:'smooth'});}
+  // close glance
+  document.getElementById('secBodyGlance').classList.remove('open');
+  document.getElementById('secToggleGlance').classList.remove('sec-open');
+}
+
+// ═══════════════════ NOTES ═══════════════════
+function editNote(key){
+  const area=document.getElementById('na_'+key);if(!area)return;
+  const cur=state.notes[key]||'',sk=key.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  area.innerHTML=`<textarea class="note-input" placeholder="Add note…">${esc(cur).replace(/<br>/g,'\n')}</textarea><div class="note-acts"><button class="n-save" onclick="saveNote('${sk}',this)">Save</button><button class="n-cancel" onclick="cancelNote('${sk}')">Cancel</button>${cur?`<button class="n-del" onclick="deleteNote('${sk}')">Delete</button>`:''}</div>`;
+  const ta=area.querySelector('textarea');if(ta){ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);}
+}
+function saveNote(key,btn){const ta=btn.closest('.note-area').querySelector('textarea');if(ta){const v=ta.value.trim();if(v)state.notes[key]=v;else delete state.notes[key];scheduleSave();}refreshNoteArea(key);}
+function cancelNote(key){refreshNoteArea(key);}
+function deleteNote(key){delete state.notes[key];scheduleSave();refreshNoteArea(key);}
+function refreshNoteArea(key){const area=document.getElementById('na_'+key);if(!area)return;const note=state.notes[key]||'',sk=key.replace(/'/g,"\\'");area.innerHTML=note?`<div class="note-display" onclick="editNote('${sk}')">📝 ${esc(note)}</div>`:`<button class="note-empty-btn" onclick="editNote('${sk}')">+ Add a note…</button>`;}
+
+// ═══════════════════ BLOCK MODAL ═══════════════════
+let eb=null;
+function openBlockModal(type,dayIdx,ref){
+  eb={type,dayIndex:dayIdx,ref};
+  const isNew=type==='new',isCustom=type==='custom';
+  document.getElementById('blockModalTitle').textContent=isNew?'➕ Add Block':'✏️ Edit Block';
+  document.getElementById('blockDelBtn').style.display=isCustom?'inline-flex':'none';
+  document.getElementById('blockResetBtn').style.display=type==='default'?'inline-flex':'none';
+  let blk={icon:'📌',time:'',title:'',detail:'',route:'',tag:''};
+  if(type==='default')blk=getBlock(dayIdx,ref);
+  else if(isCustom)blk=getCB(dayIdx).find(b=>b.id===ref)||blk;
+  document.getElementById('bm_icon').value=blk.icon||'📌';
+  document.getElementById('bm_time').value=blk.time||'';
+  document.getElementById('bm_title').value=blk.title||'';
+  document.getElementById('bm_detail').value=(blk.detail||'').replace(/<br>/g,'\n');
+  document.getElementById('bm_route').value=blk.route||'';
+  document.getElementById('bm_tag').value=blk.tag||'';
+  openModal('blockModal');
+}
+function saveBlock(){
+  const icon=document.getElementById('bm_icon').value.trim()||'📌';
+  const time=document.getElementById('bm_time').value.trim();
+  const title=document.getElementById('bm_title').value.trim();
+  const detail=document.getElementById('bm_detail').value.trim();
+  const route=document.getElementById('bm_route').value.trim();
+  const tag=document.getElementById('bm_tag').value.trim();
+  if(!title){alert('Enter a title.');return;}
+  const{type,dayIndex,ref}=eb;
+  if(type==='new'){const dk=String(dayIndex);if(!state.customBlocks[dk])state.customBlocks[dk]=[];state.customBlocks[dk].push({id:uid(),icon,time,title,detail,route:route||null,tag:tag||null});}
+  else if(type==='default'){const key=bKey(dayIndex,ref),base=DAYS[dayIndex].blocks[ref],s={};if(icon!==base.icon)s.icon=icon;if(time!==base.time)s.time=time;if(title!==base.title)s.title=title;if(detail!==base.detail)s.detail=detail;if(route!==(base.route||''))s.route=route||null;if(tag!==(base.tag||''))s.tag=tag||null;if(Object.keys(s).length)state.edits[key]={...(state.edits[key]||{}),...s};}
+  else{const dk=String(dayIndex),arr=getCB(dayIndex),idx=arr.findIndex(b=>b.id===ref);if(idx>-1)arr[idx]={...arr[idx],icon,time,title,detail,route:route||null,tag:tag||null};state.customBlocks[dk]=arr;}
+  closeModal('blockModal');renderDayBanner();renderBlocks();scheduleSave();
+}
+function resetBlock(){if(!eb||eb.type!=='default')return;if(!confirm('Reset to original?'))return;delete state.edits[bKey(eb.dayIndex,eb.ref)];closeModal('blockModal');renderBlocks();scheduleSave();}
+function deleteEditingBlock(){if(!eb||eb.type!=='custom')return;if(!confirm('Delete?'))return;delCB(eb.dayIndex,eb.ref);closeModal('blockModal');}
+function delCB(dayIdx,id){const dk=String(dayIdx);state.customBlocks[dk]=(state.customBlocks[dk]||[]).filter(b=>b.id!==id);delete state.notes['custom_'+id];renderDayBanner();renderBlocks();scheduleSave();}
+
+function switchCity(i){activeCity=i;activeDay=CITIES[i].days[0];expandedBlocks.clear();renderAll();window.scrollTo({top:0,behavior:'smooth'});}
+function switchDay(i){activeDay=i;expandedBlocks.clear();renderDayNav();renderDayBanner();renderBlocks();window.scrollTo({top:0,behavior:'smooth'});}
+function closeModal(id,e){if(!e||e.target===document.getElementById(id))document.getElementById(id).classList.remove('open');}
+function openModal(id){document.getElementById(id).classList.add('open');}
+
+async function initApp(){
+  await loadState();
+  document.getElementById('loadingScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+  renderAll();
+}
+initApp();
+</script>
+</body>
+</html>

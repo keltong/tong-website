@@ -200,7 +200,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(135d
   <div class="status-row">
     <span class="status-pill done">✅ SQ828 — SIN→PVG Fri 4 Dec 07:20</span>
     <span class="status-pill done">✅ SQ833 — PVG→SIN Tue 8 Dec 16:25</span>
-    <span class="status-pill warn">⚡ VPN and eSIM — install BEFORE leaving SG!</span>
+    <span class="status-pill done">✅ Marriott · Flights · Hangzhou HSR — all confirmed</span>
   </div>
 </div>
 
@@ -337,7 +337,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(135d
 const DAYS=[
 {date:"Fri 4 Dec",label:"Day 1",theme:"Arrival + The Bund",emoji:"🌆",color:"#E63946",accent:"#B71C1C",iconBg:"#FFCDD2",
 blocks:[
-{time:"12:45",icon:"✈️",title:"Land at Pudong International (PVG T2)",detail:"SQ828 arrives at Terminal 2. Clear immigration — first time for your wife and son so allow 30–40 min at the queue. Collect bags, then head to arrivals hall.\n\nImportant on landing: switch on your eSIM now. Turn VPN on before you open any apps. WeChat and Alipay will work without VPN — but Google Maps, Instagram, WhatsApp all need it.",route:null,tag:"🔴 Turn VPN on immediately on landing"},
+{time:"12:45",icon:"✈️",title:"Land at Pudong International (PVG T2)",detail:"SQ828 arrives at Terminal 2. Clear immigration — first time for your wife and son so allow 30–40 min at the queue. Collect bags, then head to arrivals hall.\n\nSG SIM data roaming activates automatically on landing — your telco plan covers you, no eSIM needed. WhatsApp and Google Maps will work on your SG number.",route:null,tag:"📱 SG roaming activates on landing — no local SIM needed"},
 {time:"13:45",icon:"🚐",title:"Private Transfer → Marriott Marquis",detail:"Pre-booked private transfer from PVG T2 arrivals hall direct to the hotel. Confirm driver contact and meetup point when you receive the booking confirmation.\n\nDoor to door — no need to navigate the Maglev or Metro with luggage on arrival day. ~45–60 min depending on traffic.",route:"PVG T2 Arrivals → Private Transfer → Marriott Marquis, 555 Tibet Middle Rd (direct)",tag:"✅ Booked — confirm driver WhatsApp contact before departure"},
 {time:"~15:00",icon:"🏨",title:"Check in — Shanghai Agile Marriott Hotel Marquis",detail:"Shanghai Agile Marriott Hotel Marquis (上海雅居乐万豪侯爵酒店) — 555 Middle Tibet Road, Huangpu — 4 nights (4–8 Dec).\n\n2 rooms: King Bed 35sqm each — one for you and wife, one for your son. Right on People's Square metro hub (Lines 1, 2, 8) — 440m walk from exit 19.\n\nGet settled, freshen up. Dinner is 2–3 hours away.",route:null,tag:"✅ Booked — 4 nights, 2 rooms King Bed 35sqm"},
 {time:"16:00",icon:"🚶",title:"East Nanjing Road pedestrian street",detail:"Step out of the hotel and you're on it. East Nanjing Road (南京东路) is one of the world's busiest commercial streets — 1.2km fully pedestrianised stretch from People's Square to The Bund.\n\nThis is your orientation walk. Don't shop seriously today — just absorb the scale, the neon, the crowds, the Christmas decorations (December lighting here is spectacular). Ends at the Bund riverfront.",route:null,tag:null},
@@ -384,7 +384,7 @@ blocks:[
 {time:"09:00–11:30",icon:"🛍️",title:"Free morning — last walk or shopping",detail:"You have ~3 hours before you need to leave for the airport. Options:\n• Final walk on The Bund in daylight (you saw it at night — the morning light on the colonial facades is completely different)\n• Last coffee in the French Concession\n• Any remaining shopping on Nanjing Road\n• Shanghai Museum (free, right on People's Square — world-class collection of ancient Chinese bronzes, ceramics, paintings) if you haven't been. 2 hours minimum.\n\nDon't overplan — leave time to enjoy it.",route:null,tag:null},
 {time:"12:00",icon:"🏨",title:"Checkout + luggage sorted",detail:"Check out. Hotel can store luggage if you want to use the remaining time without bags. Arrange Didi or Maglev route in advance.",route:null,tag:null},
 {time:"12:30",icon:"🚄",title:"Head to PVG — allow plenty of time",detail:"Flight SQ833 departs 16:25 from PVG T2. Be at the airport by 14:00 minimum.\n\nRoute options:\n• Metro Line 2 to Longyang Road + Maglev to PVG: ~55 min total, ¥54/person. Most reliable.\n• Didi direct: ~¥150–180, 50–70 min (more comfortable with final luggage)\n\nLeave hotel by 12:30. Don't cut this close — airport queues on a Tuesday afternoon can be long.",route:"Metro Line 2: People's Square → Longyang Road → Maglev → PVG T2",tag:"⚠️ Leave hotel by 12:30 — flight is 16:25, check-in closes 14:25"},
-{time:"~14:15",icon:"🛂",title:"Check in + security + immigration",detail:"PVG T2 international departures. SQ828 check-in counters — confirm terminal/check-in area. Allow: check-in (20 min), immigration (20–30 min), security (15 min).\n\nPVG T2 has good food options landside and airside. Have one final bowl of something if there's time.",route:null,tag:null},
+{time:"~14:15",icon:"🛂",title:"Check in + security + immigration",detail:"PVG T2 international departures. SQ833 check-in counters — confirm terminal/check-in area. Allow: check-in (20 min), immigration (20–30 min), security (15 min).\n\nPVG T2 has good food options landside and airside. Have one final bowl of something if there's time.",route:null,tag:null},
 {time:"16:25",icon:"✈️",title:"SQ833 — Shanghai Pudong → Singapore Changi",detail:"Airbus A380-800, economy class. Arrives SIN 22:15. Safe flight home.",route:null,tag:null}
 ]}
 ];
@@ -393,11 +393,15 @@ const BLOCK_EATS={
 "0_5":[
 {icon:"🥟",name:"Jia Jia Tang Bao (佳家汤包)",type:"Xiaolongbao — near People's Square",why:"One of Shanghai's most beloved xiaolongbao spots. Tiny, no-frills, packed with locals. Crab roe XLB (蟹粉汤包) is the order. Queue is expected but moves fast.",tag:"⭐ Top Pick"},
 {icon:"🌟",name:"Mr & Mrs Bund",type:"French-Shanghainese — The Bund, splurge",why:"Paul Pairet's casual bistro on The Bund. Excellent food, great atmosphere. Best for a first night splurge if you want something special.",tag:"Splurge"},
-{icon:"🏮",name:"Lost Heaven (花马天堂)",type:"Yunnan cuisine — near The Bund",why:"Atmospheric Yunnan restaurant in a stunning colonial-era building. Minority Chinese cuisine — very different from standard Shanghainese. Reliably excellent.",tag:null}
+{icon:"🏮",name:"Lost Heaven (花马天堂)",type:"Yunnan cuisine — near The Bund",why:"Atmospheric Yunnan restaurant in a stunning colonial-era building. Minority Chinese cuisine — very different from standard Shanghainese. Reliably excellent.",tag:null},
+{icon:"🍜",name:"M on the Bund (米氏西餐厅)",type:"European — rooftop Bund views",why:"Classic first night option with spectacular Bund and Pudong skyline views. Book a window table in advance. Modern European cuisine, strong wine list.",tag:"Splurge"},
+{icon:"🥘",name:"Haidilao Hot Pot — Nanjing Road",type:"Hot pot — festive arrival dinner",why:"Fun, lively option for a family first night. The service theatrics (noodle spinning, birthday singing) make it entertaining. Book 1–2 hours ahead online.",tag:null}
 ],
 "1_0":[
 {icon:"🥟",name:"Yang's Dumplings (小杨生煎)",type:"Shengjianbao — pan-fried pork buns",why:"The single most important Shanghai street food. Crispy pan-fried bottom, juicy pork and broth inside. ¥8–12 for 4 pieces. Multiple locations on Nanjing Road. EAT THESE.",tag:"⭐ Must Eat"},
-{icon:"🍳",name:"Local ci fan tuan stall",type:"Breakfast — sticky rice roll",why:"Sticky rice stuffed with youtiao, pork floss, preserved egg. ¥8. Classic Shanghai street breakfast. Find any stall near the metro.",tag:null}
+{icon:"🍳",name:"Local ci fan tuan stall",type:"Breakfast — sticky rice roll",why:"Sticky rice stuffed with youtiao, pork floss, preserved egg. ¥8. Classic Shanghai street breakfast. Find any stall near the metro.",tag:null},
+{icon:"🍜",name:"Da Hu Chun (大壶春)",type:"Shengjianbao — heritage shop since 1932",why:"The oldest shengjianbao shop in Shanghai, near People's Square. Slightly different from Yang's — slightly larger, more aromatic. The locals' preference.",tag:"⭐ Top Pick"},
+{icon:"☕",name:"Wagas (沃歌斯)",type:"Western café breakfast — People's Square branch",why:"If the family wants a sit-down Western-style breakfast before a big day. Good coffee, eggs, sandwiches. Multiple People's Square / Nanjing Road locations.",tag:null}
 ],
 "1_2":[
 {icon:"🥟",name:"Yang's Dumplings (小杨生煎)",type:"Lunch or snack — Tianzifang option block",why:"If you head to Tianzifang, Yang's Dumplings has a nearby location. Queue moves fast. The single most important Shanghai street food stop.",tag:"⭐ Must Eat"},
@@ -414,26 +418,39 @@ const BLOCK_EATS={
 ],
 "2_4":[
 {icon:"🐷",name:"Lou Wai Lou (楼外楼)",type:"Iconic Hangzhou restaurant — West Lake",why:"The most famous restaurant in Hangzhou, on the lake since 1848. Must order: Dongpo Pork (东坡肉) and West Lake Vinegar Fish (西湖醋鱼). Touristy but historically significant.",tag:"⭐ Top Pick"},
-{icon:"🍜",name:"Zhi Wei Guan (知味观)",type:"Traditional Hangzhou — more casual",why:"Cheaper and more local-feeling than Lou Wai Lou. Same Dongpo pork, beggar's chicken, and Hangzhou noodles. Multiple locations near West Lake.",tag:null}
+{icon:"🍜",name:"Zhi Wei Guan (知味观)",type:"Traditional Hangzhou — more casual",why:"Cheaper and more local-feeling than Lou Wai Lou. Same Dongpo pork, beggar's chicken, and Hangzhou noodles. Multiple locations near West Lake.",tag:null},
+{icon:"🥢",name:"Grandma's Kitchen (外婆家)",type:"Popular Hangzhou chain — casual family dining",why:"Hugely popular local chain with reliably good Hangzhou home cooking. Fast service, affordable prices, English picture menus. Good for a quick lunch if Lou Wai Lou has a long wait.",tag:null},
+{icon:"🍵",name:"Tea house lunch near Longjing Village",type:"Countryside tea house — late lunch after tea tasting",why:"If you're heading to Longjing in the afternoon, some tea farmhouses offer simple home-cooked lunch sets (¥50–80/person). Less formal, very local — ask the tea house owner.",tag:null}
 ],
 "2_5":[
 {icon:"🍰",name:"Osmanthus cake (桂花糕)",type:"Hefang Street sweet — Hangzhou signature",why:"Hangzhou's most iconic sweet. Soft, fragrant with osmanthus flower. Eat fresh and warm from the street stall.",tag:"⭐ Must Try"},
 {icon:"🍢",name:"Stinky tofu (臭豆腐)",type:"Street food — brave option",why:"Deep-fried fermented tofu. Smells alarming, tastes excellent. Hangzhou street version is milder than the Hunan style. Worth trying at least once.",tag:null}
 ],
 "2_6":[
-{icon:"🍜",name:"Comfortable dinner near hotel",type:"Back in Shanghai — keep it easy",why:"After a long day out, keep dinner close to the hotel. A bowl of wonton soup (云吞) or local noodles from any side-street restaurant. You've eaten well in Hangzhou.",tag:null}
+{icon:"🍜",name:"Comfortable dinner near hotel",type:"Back in Shanghai — keep it easy",why:"After a long day out, keep dinner close to the hotel. A bowl of wonton soup (云吞) or local noodles from any side-street restaurant. You've eaten well in Hangzhou.",tag:null},
+{icon:"🥢",name:"Din Tai Fung — Raffles City or IAPM Mall",type:"Familiar comfort food — reliable XLB",why:"If the family is tired and wants something familiar and guaranteed good, Din Tai Fung at a nearby mall is a safe bet. No surprises, good quality, easy on a jet-lagged evening.",tag:null},
+{icon:"🍲",name:"Wonton noodle soup — any side street noodle shop",type:"Quick and local — ¥25–40",why:"The most honest late dinner in Shanghai. Find any noodle shop within walking distance of People's Square. Wonton soup, red braised pork noodles, or simple scallion noodles. Fast, cheap, comforting.",tag:"⭐ Best after a long day"},
+{icon:"🏮",name:"Yonghe King (永和大王)",type:"24hr fast food chain — always open",why:"Shanghai's answer to late-night comfort food. Congee, soy milk, fried dough, noodles. Open 24 hours. If you arrive back late from Hangzhou and just need something — this works.",tag:null}
 ],
-"3_3":[
+"3_4":[
 {icon:"🥟",name:"Din Tai Fung — IFC Mall",type:"Xiaolongbao — reliable, international standard",why:"Consistent quality, English menu, air-conditioned. Good for a relaxed lunch if you want reliable XLB without street-food-hunting.",tag:null},
-{icon:"🍜",name:"Crystal Jade — IFC Mall",type:"Shanghainese / Cantonese — IFC L3",why:"Reliable Shanghainese dishes in a clean setting. La mian (hand-pulled noodles) and XLB both good.",tag:null}
+{icon:"🍜",name:"Crystal Jade — IFC Mall",type:"Shanghainese / Cantonese — IFC L3",why:"Reliable Shanghainese dishes in a clean setting. La mian (hand-pulled noodles) and XLB both good.",tag:null},
+{icon:"🍣",name:"Wagas or any IFC food court",type:"Quick casual — IFC Lujiazui",why:"IFC L1 food court has Japanese, Korean, Western, and Chinese options. Good for a quick lunch before heading to LaLaport. Skip the queue — order and go.",tag:null}
 ],
-"3_6":[
+"3_5":[
+{icon:"🛍️",name:"Food options at LaLaport Shanghai",type:"Mall food — after Gundam statue",why:"LaLaport has a full food floor with Japanese, Korean, local Chinese, and café options. Grab a snack or early tea after the photos. Japanese conveyor belt sushi and ramen are well represented.",tag:null},
+{icon:"☕",name:"Café near Freedom Gundam outdoor area",type:"Coffee + rest stop",why:"Take a coffee break after the photos and mall walk. LaLaport has several café options — good for a family regroup before heading back to Puxi.",tag:null}
+],
+"3_7":[
 {icon:"🏮",name:"Fu 1088 (福1088)",type:"Best Shanghainese dining — French Concession villa",why:"If you haven't been yet, make tonight the night. 1930s villa setting, multi-room, refined Shanghainese cuisine. One of the best restaurants in the city. Book at least a few days ahead.",tag:"⭐ Top Pick Tonight"},
 {icon:"🔥",name:"Haidilao Hot Pot (海底捞)",type:"Premium hot pot — multiple locations",why:"The most famous hot pot chain in China. Exceptional service (they entertain you while you wait), fresh ingredients, endless condiment bar. Good for a lively family final dinner.",tag:"⭐ Family Favourite"},
-{icon:"🐟",name:"Chun (椿)",type:"Shanghainese bistro — French Concession",why:"Modern take on classic Shanghai home cooking. Excellent hong shao rou, hairy tofu, and seasonal dishes. More accessible than Fu 1088.",tag:null}
+{icon:"🐟",name:"Chun (椿)",type:"Shanghainese bistro — French Concession",why:"Modern take on classic Shanghai home cooking. Excellent hong shao rou, hairy tofu, and seasonal dishes. More accessible than Fu 1088.",tag:null},
+{icon:"🥢",name:"Ultraviolet by Paul Pairet",type:"World-class 10-seat experience dinner — book months ahead",why:"One of Asia's most innovative restaurants (3 Michelin stars). Only 10 seats per night, fully immersive multi-sensory dining. Only if booked months in advance — mention it in case you plan future visits.",tag:"Bucket List (advance booking only)"}
 ],
 "4_0":[
-{icon:"🥟",name:"Yang's Dumplings — final shengjianbao",type:"One last round before the airport",why:"If this is your last morning and you haven't had enough of these — now is the time. Take-away bag to eat on the go.",tag:"⭐ Last Chance"}
+{icon:"🥟",name:"Yang's Dumplings — final shengjianbao",type:"One last round before the airport",why:"If this is your last morning and you haven't had enough of these — now is the time. Take-away bag to eat on the go.",tag:"⭐ Last Chance"},
+{icon:"☕",name:"Brunch at The Bund or People's Square café",type:"Slow morning coffee + eggs",why:"Final morning treat. Walk to The Bund one last time for a 09:00 café breakfast with the morning light on the colonial buildings — completely different from the night view. Wagas or any hotel café near The Bund.",tag:null},
+{icon:"🍜",name:"One last scallion oil noodle (葱油拌面)",type:"Shanghai farewell bowl — ¥15",why:"The most Shanghai thing to eat. A bowl of thin noodles in scallion lard at a tiny local shop. Cheap, fast, unforgettable. Find any 面馆 within 5 min of the hotel.",tag:"Recommended"}
 ]
 };
 
@@ -447,21 +464,20 @@ const DEFAULT_BOOKINGS=[
 {id:"b5",icon:"🏮",text:"Fu 1088 restaurant — book in advance for Mon 7 Dec dinner",done:false},
 {id:"b6",icon:"🔥",text:"Haidilao Hot Pot — confirm location and book if preferred for final dinner",done:false},
 {id:"b7",icon:"🏯",text:"Yu Garden entry tickets — ¥40/person (can buy at gate, but check peak queues)",done:false},
-{id:"b8",icon:"🏞️",text:"Leifeng Pagoda, Hangzhou — ¥40/person entry",done:false}
+{id:"b8",icon:"🏞️",text:"Leifeng Pagoda, Hangzhou — ¥40/person entry",done:false},
+{id:"b9",icon:"🤖",text:"Freedom Gundam at LaLaport — confirm still on display before Day 4 (search Google Maps: 'Freedom Gundam LaLaport Shanghai')",done:false}
 ];
 
 const DEFAULT_PRETRIP=[
-{id:"p0",icon:"🔒",title:"Install VPN BEFORE leaving Singapore",desc:"Critical — you cannot download VPN apps inside China. Get ExpressVPN, NordVPN, or Astrill. Test it works. This is non-negotiable for WhatsApp, Google Maps, Instagram.",when:"now",whenLabel:"Do NOW — Before Departure",link:"https://www.expressvpn.com",linkLabel:"ExpressVPN"},
 {id:"p1",icon:"🛂",title:"No visa required — Singaporeans get 30-day visa-free to China",desc:"Confirmed as of 2024 mutual visa-free policy between Singapore and China. Valid for all 3 pax. No action needed — just arrive with valid passports.",when:"now",whenLabel:"FYI — No action needed",link:null,linkLabel:null},
 {id:"p2",icon:"🛂",title:"Check all 3 passports — valid + blank pages",desc:"China requires at least 2 blank pages. Check all expiry dates. Must be valid for full stay + buffer.",when:"now",whenLabel:"Do Now",link:null,linkLabel:null},
 {id:"p3",icon:"💳",title:"Set up WeChat Pay international card linking",desc:"You already have WeChat Pay — ensure your card is still linked and functional. Top up balance or confirm international card still works. Your wife and son should set up their own if they don't have it.",when:"now",whenLabel:"Do Now",link:"https://pay.weixin.qq.com/index.php/public/wechatpay_en",linkLabel:"WeChat Pay"},
 {id:"p4",icon:"💳",title:"Set up Alipay international for wife and son",desc:"You already have Alipay. Get your wife and son set up — Alipay International version accepts foreign cards. Essential for markets, smaller restaurants, and anywhere WeChat Pay isn't accepted.",when:"now",whenLabel:"Do Now",link:"https://intl.alipay.com",linkLabel:"Alipay International"},
 {id:"p5",icon:"🚗",title:"Download and set up Didi app",desc:"Chinese equivalent of Grab/Uber. Accepts international payment. Essential for getting around Shanghai and Hangzhou without haggling with taxis. Set up for all pax who have smartphones.",when:"now",whenLabel:"Do Now",link:"https://www.didiglobal.com",linkLabel:"Didi App"},
-{id:"p6",icon:"📱",title:"Download Pleco Chinese dictionary app",desc:"Best Chinese dictionary app — works offline, essential for reading menus and signs. Also download Google Translate Chinese offline pack (works without internet via camera).",when:"now",whenLabel:"Do Now",link:"https://www.pleco.com",linkLabel:"Pleco App"},
+{id:"p6",icon:"📱",title:"Download Pleco Chinese dictionary app",desc:"Best Chinese dictionary app — works offline, essential for reading menus and signs. Download the Chinese offline pack for camera translation of menus and signs.",when:"now",whenLabel:"Do Now",link:"https://www.pleco.com",linkLabel:"Pleco App"},
 {id:"p7",icon:"🏥",title:"Travel insurance for all 3 pax",desc:"China has no healthcare agreement with Singapore. Medical costs can be very high. Buy comprehensive cover including medical evacuation.",when:"now",whenLabel:"Do Now",link:"https://www.moneysmart.sg/travel-insurance",linkLabel:"Compare Insurance"},
-{id:"p8",icon:"🌐",title:"Purchase China eSIM",desc:"You have eSIM (non-China) which will work for data but roaming rates may apply. A local China eSIM gives better speeds and lower cost. Airalo or Klook. Note: with VPN on your regular eSIM will work fine for most purposes.",when:"soon",whenLabel:"2–4 Weeks Before",link:"https://www.airalo.com/china-esim",linkLabel:"China eSIM Options"},
 {id:"p9",icon:"🚄",title:"Hangzhou HSR tickets — CONFIRMED ✅",desc:"Outbound: Shanghai Hongqiao → Hangzhoudong, Sun 6 Dec, depart 08:28, arrive 09:27, 1st class. Return: Hangzhoudong → Shanghai Hongqiao, Sun 6 Dec, depart 18:01, arrive 19:03, business class.",when:"now",whenLabel:"✅ Done — Tickets Confirmed",link:"https://www.trip.com/trains/",linkLabel:"Trip.com Rail Tickets"},
-{id:"p10",icon:"📍",title:"Download offline maps — Apple Maps or Baidu Maps",desc:"Google Maps has limited function in China even with VPN. Apple Maps works reasonably well in China without VPN. Download Shanghai and Hangzhou offline areas. Baidu Maps is most accurate but Chinese-only.",when:"pre",whenLabel:"Before Departure",link:null,linkLabel:null},
+{id:"p10",icon:"📍",title:"Download offline maps — Apple Maps",desc:"Apple Maps works well in China on SG SIM. Download Shanghai and Hangzhou areas offline before departing. Baidu Maps is most accurate but Chinese-only — optional secondary option.",when:"pre",whenLabel:"Before Departure",link:null,linkLabel:null},
 {id:"p11",icon:"💴",title:"Get some RMB cash before departure or on arrival",desc:"While WeChat/Alipay cover most things, you need cash for: Didi (sometimes), small street vendors, Yu Garden entry, some temple donations. Change at Changi airport or withdraw at PVG ATM on arrival. Budget ¥1,500–2,000 for the group.",when:"pre",whenLabel:"Before or On Arrival",link:null,linkLabel:null}
 ];
 
@@ -485,15 +501,15 @@ const MUST_VISIT=[
 ];
 
 const TIPS_DATA=[
-{icon:"🔒",title:"VPN First",text:"Install and test your VPN in Singapore before flying. Google Maps, WhatsApp, Instagram, and Gmail all need it in China. Cannot download VPN once inside."},
+{icon:"📱",title:"SG SIM works fine",text:"Your SG telco roaming plan covers China — WhatsApp, Google Maps, and Instagram all work normally on your SG number. No local SIM or eSIM needed. WeChat Pay and Alipay are still essential for payments."},
 {icon:"💳",title:"WeChat Pay + Alipay",text:"Cash is almost useless in modern Shanghai. Even street vendors prefer QR codes. Have both apps loaded and tested before landing."},
 {icon:"🌡️",title:"December Cold",text:"Shanghai in December: 5–12°C with wind chill off the river. Hangzhou is slightly colder. Bring a proper coat, not just a jacket. The Bund riverfront at night is bitter."},
 {icon:"🚇",title:"Metro is excellent",text:"Shanghai Metro is clean, fast, cheap and has English signage. Line 2 covers most of your itinerary. Buy a transportation card (¥20 deposit) for tap-in/out."},
 {icon:"🚗",title:"Didi over taxis",text:"Always use Didi — fixed price, GPS tracked, driver can't overcharge. Regular taxis in Shanghai can be difficult if you don't speak Mandarin."},
 {icon:"🍜",title:"Breakfast culture",text:"Shanghai breakfast is a serious affair. Shengjianbao, ci fan tuan, and scallion noodles from a local hole-in-the-wall cost ¥10–20 and are genuinely excellent."},
 {icon:"📸",title:"Wukang Mansion",text:"Most photographed building in Shanghai — Wukang Road intersection. Go before 10am on weekdays. Weekends attract crowds of selfie-takers."},
-{icon:"🧳",title:"Luggage note",text:"Unlike Tokyo, there's no major vintage shopping day — but Gundam Base may require luggage space. Pack a foldable bag in case your son goes deep on Gunpla."},
-{icon:"🗣️",title:"Language",text:"Less English than you'd expect outside major hotels and malls. Google Translate camera mode + Pleco covers menus. Learning 谢谢 (xie xie, thank you) goes a long way."},
+{icon:"🧳",title:"Pack a foldable bag",text:"Shanghai shopping can surprise you. Pack a foldable tote or duffel bag — useful for Nanjing Road, Yuyuan Bazaar souvenirs, or anything your son picks up at LaLaport. LaLaport has good stores beyond just the Gundam statue."},
+{icon:"🗣️",title:"Language",text:"Less English than you'd expect outside major hotels and malls. Apple Translate camera mode + Pleco covers menus and signs. Learning 谢谢 (xie xie, thank you) and 买单 (mai dan, bill please) goes a long way."},
 {icon:"🎄",title:"December timing",text:"December is a good time to visit: Christmas lights on Nanjing Road and The Bund are spectacular, West Lake in Hangzhou is atmospheric without summer crowds, and indoor attractions are less queued."}
 ];
 
